@@ -4,14 +4,15 @@ import { RequestWithUser } from '@interfaces/auth.interface';
 import { Admin, IAdmin } from '../../interfaces/users.interface';
 import { AdminService } from '../services/admin.service';
 import { OK } from '../../helpers/valid_responses/success.response';
-export class AdminController {
-  public admin = Container.get(AdminService);
-  public loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
+import { TeacherService } from '../services/teacher.service';
+export class TeacherController {
+  public teacher = Container.get(TeacherService);
+  public loginTeacher = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const login = await this.admin.loginAdmin(data);
+      const login = await this.teacher.loginTeacher(data);
       new OK({
-        message: 'Login admin success',
+        message: 'Login teacher success',
         data: {
           accessToken: login.accessToken,
           refreshToken: login.refreshToken,
@@ -21,12 +22,12 @@ export class AdminController {
       next(error);
     }
   };
-  public registerAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  public registerTeacher = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: IAdmin = req.body;
-      const register = await this.admin.registerAdmin(data);
+      const register = await this.teacher.registerTeacher(data);
       new OK({
-        message: 'Register admin success',
+        message: 'Register teacher success',
         data: {
           accessToken: register.accessToken,
           refreshToken: register.refreshToken,

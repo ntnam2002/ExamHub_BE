@@ -7,8 +7,8 @@ import { log } from 'console';
 import { generateTokens } from '@/auth/authUtils';
 
 @Service()
-export class UserService {
-  public async loginStudent(data: User): Promise<any> {
+export class TeacherService {
+  public async loginTeacher(data: User): Promise<any> {
     const { username, password } = data;
     try {
       const findUser = await UserModel.findOne({ username });
@@ -24,7 +24,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
-  public async registerStudent(data: User): Promise<any> {
+  public async registerTeacher(data: User): Promise<any> {
     try {
       const { username, password } = data;
       const existingUser = await UserModel.findOne({ username });
@@ -35,7 +35,7 @@ export class UserService {
       data.password = hashedPassword;
       const newUser = new UserModel({
         ...data,
-        role: 'student',
+        role: 'teacher',
       });
       newUser.save();
       const { refreshToken, accessToken } = await generateTokens({
@@ -43,16 +43,6 @@ export class UserService {
         _role: newUser.role,
       });
       return { refreshToken, accessToken };
-    } catch (error) {
-      throw new HttpException(400, error.message);
-    }
-  }
-  public async forgotPassword(data: User): Promise<any> {
-    const { username } = data;
-    try {
-      const findUser = await UserModel.findOne({ username });
-      if (!findUser) throw new Error('User not found');
-      log('Forgot password');
     } catch (error) {
       throw new HttpException(400, error.message);
     }

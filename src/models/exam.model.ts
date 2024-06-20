@@ -1,34 +1,40 @@
+import { Exam, Question, Result } from '@/interfaces/exam.interface';
 import { Document, model, Schema } from 'mongoose';
-import { Exam, Result } from '../interfaces/exam.interface';
-const QuestionAnswerSchema: Schema = new Schema({
-  questionAnswerId: { type: Schema.Types.ObjectId, required: true, unique: true },
-  questionAnswerContent: { type: String, required: true },
-});
-const QuestionSchema: Schema = new Schema({
-  questionId: { type: Schema.Types.ObjectId, required: true, unique: true },
-  questionContent: { type: String, required: true },
-  questionType: { type: String, required: true },
-  questionAnswers: [QuestionAnswerSchema],
-  questionCorrectAnswer: { type: String, required: true },
-});
-const ExamSchema: Schema = new Schema({
-  examId: { type: Schema.Types.ObjectId, required: true, unique: true },
-  examName: { type: String, required: true },
-  examType: { type: String, required: true },
-  examDate: { type: Date, required: true },
-  examDuration: { type: Number, required: true },
-  examApproved: { type: String, required: true },
-  examQuestions: [QuestionSchema],
-  CreatedAt: { type: Date, required: true },
-});
 
-const ResultSchema: Schema = new Schema({
-  resultId: { type: Schema.Types.ObjectId, required: true, unique: true },
-  examId: { type: Schema.Types.ObjectId, ref: 'Exam', required: true },
-  studentId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+const examSchema = new Schema({
+  exam_name: { type: String, required: true },
+  description: { type: String },
+  questions: [
+    {
+      question_id: { type: Schema.Types.ObjectId, ref: 'Question', required: true },
+      points: { type: Number, required: true },
+    },
+  ],
+  created_by: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  class_ids: [{ type: Schema.Types.ObjectId, ref: 'Class', required: true }],
+  scheduled_date: { type: Date, required: true },
+  duration_minutes: { type: Number, required: true },
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+});
+const questionSchema = new Schema({
+  text: { type: String, required: true },
+  options: [
+    {
+      text: { type: String, required: true },
+      is_correct: { type: Boolean, required: true },
+    },
+  ],
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+});
+const resultSchema = new Schema({
+  exam_id: { type: Schema.Types.ObjectId, ref: 'Exam', required: true },
+  student_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   score: { type: Number, required: true },
-  submittedAt: { type: Date, required: true, default: Date.now },
+  submitted_at: { type: Date, default: Date.now },
 });
 
-export const ResultModel = model<Result & Document>('Result', ResultSchema);
-export const ExamModel = model<Exam & Document>('Exam', ExamSchema);
+export const ResultModel = model<Result & Document>('Results', resultSchema);
+export const QuestionModel = model<Question & Document>('Questions', questionSchema);
+export const ExamModel = model<Exam & Document>('Exams', examSchema);

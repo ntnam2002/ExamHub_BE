@@ -4,12 +4,13 @@ import { CreateUserDto } from '@dtos/users.dto';
 import { Routes } from '@interfaces/routes.interface';
 import { AuthAdminMiddleware, AuthMiddleware } from '@middlewares/auth.middleware';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
-import { AdminController } from '../controllers/admin.controller';
 
-export class AdminRoute implements Routes {
-  public path = '/admin/';
+import { TeacherController } from '../controllers/teacher.controller';
+
+export class TeacherRoute implements Routes {
+  public path = '/teacher/';
   public router = Router();
-  public admin = new AdminController();
+  public teacher = new TeacherController();
 
   constructor() {
     this.initializeRoutes();
@@ -19,8 +20,8 @@ export class AdminRoute implements Routes {
     this.router.post(
       `${this.path}login`,
       //ValidationMiddleware(CreateUserDto),
-      this.admin.loginAdmin,
+      this.teacher.loginTeacher,
     );
-    this.router.post(`${this.path}register`, this.admin.registerAdmin);
+    this.router.post(`${this.path}register`, this.teacher.registerTeacher);
   }
 }

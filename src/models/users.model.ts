@@ -1,58 +1,37 @@
-import { Admin, Student, Teacher } from '@/interfaces/users.interface';
-import { model, Schema, Document } from 'mongoose';
+import { Admin, Class, User } from '@/interfaces/users.interface';
+import { Document, model } from 'mongoose';
 
-const UserSchema: Schema = new Schema(
-  {
-    userName: { type: String, required: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    role: { type: String, required: true, enum: ['admin', 'student', 'teacher'] },
-    className: { type: String, required: true },
-    department: { type: String },
-    createdAt: { type: Date, default: Date.now },
-  },
-  { timestamps: true },
-);
-const AdminSchema: Schema = new Schema(
-  {
-    ...UserSchema.obj,
-  },
-  { timestamps: true },
-);
-const StudentClassSchema: Schema = new Schema(
-  {
-    className: { type: String, required: true },
-    department: { type: String, required: true },
-    students: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
-    createdAt: { type: Date, default: Date.now },
-  },
-  { timestamps: true },
-);
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-export const StudentClassModel = model<Document & { classId: Schema.Types.ObjectId }>(
-  'StudentClass',
-  StudentClassSchema,
-);
-const StudentSchema: Schema = new Schema(
-  {
-    ...UserSchema.obj,
-    classId: { type: Schema.Types.ObjectId, ref: 'StudentClass', required: true },
-    schoolYear: { type: String, required: true },
-  },
-  { timestamps: true },
-);
-const TeacherSchema: Schema = new Schema(
-  {
-    ...UserSchema.obj,
-  },
-  { timestamps: true },
-);
+const userSchema = new Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  role: { type: String, enum: ['student', 'teacher'], required: true },
+  class_ids: { type: Schema.Types.ObjectId, ref: 'Class' },
+  department_id: { type: Schema.Types.ObjectId, ref: 'Department' },
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+});
+const adminSchema = new Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  role: { type: String, required: true, default: 'admin' },
+  created_at: { type: Date, default: Date.now },
+});
+const classSchema = new Schema({
+  class_name: { type: String, required: true },
+  student_ids: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+});
 
-export const TeacherModel = model<Teacher & Document>('Teacher', TeacherSchema);
-
-export const StudentModel = model<Student & Document>('Student', StudentSchema);
-
-export const AdminModel = model<Admin & Document>('Admin', AdminSchema);
-
-export const UserModel = model<Document & { userId: Schema.Types.ObjectId }>('User', UserSchema);
+const departmentSchema = new Schema({
+  department_name: { type: String, required: true },
+  teacher_ids: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+});
+export const DepartmentModel = model<Department & Document>('Department', departmentSchema);
+export const UserModel = model<User & Document>('User', userSchema);
+export const AdminModel = model<Admin & Document>('Admin', adminSchema);
+export const ClassModel = model<Class & Document>('Class', classSchema);
