@@ -12,6 +12,11 @@ export interface Question {
   updated_at: Date;
 }
 
+export interface IQuestion {
+  text: string;
+  options: Option[];
+}
+
 export interface Option {
   text: string;
   is_correct: boolean;
@@ -26,4 +31,14 @@ export interface Exam {
   duration_minutes: number;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface IExam {
+  exam_name: string;
+  description: string;
+  questions: Question[];
+  created_by: string;
+  class_ids: string[];
+  scheduled_date: Date;
+  duration_minutes: number;
 }

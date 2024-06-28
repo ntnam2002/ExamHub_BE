@@ -1,4 +1,4 @@
-import { Admin, Class, User } from '@/interfaces/users.interface';
+import { Admin, Class, Department, User } from '@/interfaces/users.interface';
 import { Document, model } from 'mongoose';
 
 const mongoose = require('mongoose');
@@ -9,10 +9,9 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   role: { type: String, enum: ['student', 'teacher'], required: true },
-  class_ids: { type: Schema.Types.ObjectId, ref: 'Class' },
-  department_id: { type: Schema.Types.ObjectId, ref: 'Department' },
+  class_ids: { type: String, ref: 'Class' },
+  department_id: { type: String, ref: 'Department' },
   created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
 });
 const adminSchema = new Schema({
   username: { type: String, required: true },
@@ -22,14 +21,16 @@ const adminSchema = new Schema({
 });
 const classSchema = new Schema({
   class_name: { type: String, required: true },
-  student_ids: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  teacherId: { type: String },
+  student_ids: [{ type: String, ref: 'User' }],
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
 
 const departmentSchema = new Schema({
   department_name: { type: String, required: true },
-  teacher_ids: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  teacher_ids: [{ type: String, ref: 'User' }],
+  class_ids: [{ type: String, ref: 'Class' }],
 });
 export const DepartmentModel = model<Department & Document>('Department', departmentSchema);
 export const UserModel = model<User & Document>('User', userSchema);

@@ -11,7 +11,7 @@ import { DataStoredInToken, DataStoredInTokenAdmin } from '@interfaces/auth.inte
 
 import { NextFunction } from 'express';
 
-type TTypekey = 'accessToken' | 'refreshToken';
+export type TTypekey = 'accessToken' | 'refreshToken';
 
 export const createJwtToken = (payload: DataStoredInToken, typeKey: TTypekey) => {
   const key = typeKey === 'accessToken' ? ACCESS_TOKEN : REFRESH_TOKEN;

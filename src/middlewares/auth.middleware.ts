@@ -21,7 +21,7 @@ export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: 
     const Authorization = getAuthorization(req);
 
     if (Authorization) {
-      const { _id } = (await verify(Authorization, SECRET_KEY)) as DataStoredInToken;
+      const { _id } = (await verify(Authorization, 'accessToken')) as DataStoredInToken;
       const findUser = await UserModel.findById(_id);
 
       if (findUser) {
@@ -46,18 +46,16 @@ export const AuthAdminMiddleware = async (
     const Authorization = getAuthorization(req);
 
     if (Authorization) {
-      const { _id, role } = (await verify(Authorization, SECRET_KEY)) as DataStoredInToken;
+      const { _id, role } = (await verify(Authorization, ACCESS_TOKEN)) as DataStoredInToken;
       const findUser = await AdminModel.findById(_id);
-
-      if (role === 'student' || role === 'PARENT') {
-        next(new HttpException(403, 'Wrong authentication token'));
+      if (role !== 'admin') {
+        next(new HttpException(401, 'Wrong authentication token'));
       }
-
       if (findUser?.role === 'admin') {
         req.user = findUser;
         next();
       } else {
-        next(new HttpException(401, 'Wrong authentication token'));
+        next(new HttpException(401, 'Wrong authentication token ne'));
       }
     } else {
       next(new HttpException(401, 'Authentication token missing'));

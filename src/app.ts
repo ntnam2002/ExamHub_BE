@@ -13,7 +13,8 @@ import { dbConnection } from '@database';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-
+import { createClient } from 'redis';
+import { redis } from './database/redis.database';
 export class App {
   public app: express.Application;
   public env: string;
@@ -25,6 +26,7 @@ export class App {
     this.port = PORT || 3000;
 
     this.connectToDatabase();
+    this.connectRedis();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeSwagger();
@@ -50,7 +52,7 @@ export class App {
 
   private initializeMiddlewares() {
     this.app.use(morgan(LOG_FORMAT, { stream }));
-    this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+    this.app.use(cors());
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
@@ -63,6 +65,10 @@ export class App {
     routes.forEach(route => {
       this.app.use('/', route.router);
     });
+  }
+
+  private async connectRedis() {
+    await redis.connect();
   }
 
   private initializeSwagger() {
