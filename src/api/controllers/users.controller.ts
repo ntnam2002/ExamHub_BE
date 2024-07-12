@@ -3,7 +3,7 @@ import { Container } from 'typedi';
 
 import { UserService } from '@/api/services/users.service';
 import { OK } from '@/helpers/valid_responses/success.response';
-import { IUser, User } from '@/interfaces/users.interface';
+import { IUser, User, UserRegister } from '@/interfaces/users.interface';
 
 export class UserController {
   public user = Container.get(UserService);
@@ -12,9 +12,9 @@ export class UserController {
       const data: IUser = req.body;
       const result = await this.user.login(data);
       new OK({
-        message: 'Login admin success',
+        message: 'Login success',
         data: {
-          username: result.usernameAdmin,
+          username: result.Username,
           authority: result.role,
           accessToken: result.accessToken,
           refreshToken: result.refreshToken,
@@ -26,10 +26,10 @@ export class UserController {
   };
   public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: User = req.body;
+      const data: UserRegister = req.body;
       const result = await this.user.register(data);
       new OK({
-        message: 'Register admin success',
+        message: 'Register success',
         data: {
           accessToken: result.accessToken,
           refreshToken: result.refreshToken,
@@ -42,8 +42,25 @@ export class UserController {
   public getAllStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.user.getAllStudents();
+
       new OK({
-        message: 'Get admin success',
+        message: 'Get User success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+  public getStudentById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const result = await this.user.getStudentById(userId);
+      new OK({
+        message: 'Get User success',
         data: result,
       }).send(res);
     } catch (error) {
@@ -55,7 +72,7 @@ export class UserController {
       const userId = req.params.id;
       const result = await this.user.deleteUser(userId);
       new OK({
-        message: 'Delete admin success',
+        message: 'Delete User success',
         data: result,
       }).send(res);
     } catch (error) {
@@ -79,7 +96,7 @@ export class UserController {
       const data: User = req.body;
       const result = await this.user.updateUser(userId, data);
       new OK({
-        message: 'Update admin success',
+        message: 'Update User success',
         data: result,
       }).send(res);
     } catch (error) {

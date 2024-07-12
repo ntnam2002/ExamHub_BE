@@ -36,9 +36,21 @@ export interface Exam {
 export interface IExam {
   exam_name: string;
   description: string;
-  questions: Question[];
+  questions: string[];
   created_by: string;
   class_ids: string[];
   scheduled_date: Date;
   duration_minutes: number;
+}
+
+export interface Examination {
+  exam_id: string;
+  question_id: string[];
+  class_id: string[];
+  student_id: string[];
+  access_keys: string;
+  started_at: Date;
+  created_by: string;
+  created_at: Date;
+  updated_at: Date;
 }

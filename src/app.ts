@@ -15,6 +15,7 @@ import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 import { createClient } from 'redis';
 import { redis } from './database/redis.database';
+import { checkTokenMiddleware } from './middlewares/token.middleware';
 export class App {
   public app: express.Application;
   public env: string;
@@ -26,7 +27,7 @@ export class App {
     this.port = PORT || 3000;
 
     this.connectToDatabase();
-    this.connectRedis();
+    //this.connectRedis();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeSwagger();
@@ -67,9 +68,9 @@ export class App {
     });
   }
 
-  private async connectRedis() {
-    await redis.connect();
-  }
+  // private async connectRedis() {
+  //   await redis.connect();
+  // }
 
   private initializeSwagger() {
     const options = {

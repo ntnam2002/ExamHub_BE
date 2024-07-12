@@ -10,9 +10,9 @@ export class AdminController {
   public loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      console.log(data);
+
       const login = await this.admin.loginAdmin(data);
-      console.log('login', login);
+
       new OK({
         message: 'Login admin success',
         data: {
@@ -41,7 +41,17 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
-
+  public logOutAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = req.body;
+      await this.admin.logOutAdmin(userId);
+      new OK({
+        message: 'Logout success',
+      }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
   public getAllClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const getAllClass = await this.admin.getAllClass();
@@ -56,7 +66,7 @@ export class AdminController {
   public addClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { className } = req.body;
-      console.log(className);
+
       const addClass = await this.admin.addClass(className);
       new OK({
         message: 'Add class success',
@@ -69,7 +79,7 @@ export class AdminController {
   public deleteClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params;
-      console.log(classId);
+
       const deleteClass = await this.admin.deleteClass(classId);
       new OK({
         message: 'Delete class success',

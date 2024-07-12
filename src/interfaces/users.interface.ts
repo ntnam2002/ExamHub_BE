@@ -5,6 +5,16 @@ export interface User {
   role: string;
   class_ids: string;
   department_id: string;
+  created_at: Date;
+}
+
+export interface UserRegister {
+  username: string;
+  password: string;
+  email: string;
+  role: string;
+  class_ids: string;
+  department_id: string;
 }
 
 export interface UpdateUser {
@@ -29,14 +39,7 @@ export interface IUser {
   username: string;
   password: string;
 }
-export interface IUser {
-  username: string;
-  password: string;
-  email: string;
-  role: string;
-  class_ids: string;
-  department_id: string;
-}
+
 export interface Class {
   class_name: string;
   student_ids: string[];

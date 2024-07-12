@@ -7,9 +7,9 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
   role: { type: String, enum: ['student', 'teacher'], required: true },
-  class_ids: { type: String, ref: 'Class' },
+  class_ids: [{ type: String, ref: 'Class' }],
   department_id: { type: String, ref: 'Department' },
   created_at: { type: Date, default: Date.now },
 });

@@ -1,18 +1,18 @@
 import { compare, hash } from 'bcrypt';
 import { Service } from 'typedi';
 import { HttpException } from '@exceptions/httpException';
-import { IAdmin, User } from '@interfaces/users.interface';
-import { UserModel } from '@models/users.model';
+import { IAdmin, IUser, User, UserRegister } from '@interfaces/users.interface';
+import { ClassModel, DepartmentModel, UserModel } from '@models/users.model';
 import { log } from 'console';
 import { generateTokens } from '@/auth/authUtils';
 
 @Service()
 export class UserService {
-  public async login(data: IAdmin): Promise<any> {
+  public async login(data: IUser): Promise<any> {
     try {
       const { username, password } = data;
       const findUser = await UserModel.findOne({ username: username });
-      if (!findUser) throw new Error('Admin not found');
+      if (!findUser) throw new Error('User not found');
       const comparePassword = await compare(password, findUser.password);
       if (!comparePassword) throw new Error('Password not matching');
       const { refreshToken, accessToken } = await generateTokens({
@@ -26,13 +26,19 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
-  public async register(data: User): Promise<any> {
+  public async register(data: UserRegister): Promise<any> {
     try {
       const { username, password, email, role, class_ids, department_id } = data;
       const existingUser = await UserModel.findOne({ username });
       if (existingUser) {
         throw new Error('User already exists');
       }
+      const findDepartment = await DepartmentModel.findOne({ _id: department_id });
+      if (!findDepartment) throw new Error('Department not found');
+      const findClass = await ClassModel.findOne({ _id: class_ids });
+      if (!findClass) throw new Error('Class not found');
+      const findDuplicateEmail = await UserModel.findOne({ email });
+      if (findDuplicateEmail) throw new Error('Email already exists');
       const hashedPassword = await hash(password, 10);
       data.password = hashedPassword;
       const newUser = new UserModel({
@@ -87,6 +93,15 @@ export class UserService {
 
       if (!findUser) throw new Error('User not found');
       return findUser;
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
+  public async getStudentById(userId: string): Promise<any> {
+    try {
+      const findStudent = await UserModel.findOne({ _id: userId, role: 'student' });
+      if (!findStudent) throw new Error('Student not found');
+      return findStudent;
     } catch (error) {
       throw new HttpException(400, error.message);
     }

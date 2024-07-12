@@ -1,17 +1,17 @@
-import { Exam, Question, Result } from '@/interfaces/exam.interface';
+import { Exam, Question, Result, Examination } from '@/interfaces/exam.interface';
 import mongoose, { Document, model, Schema } from 'mongoose';
-import crypto from 'crypto';
+
+// Option Schema
+const optionSchema = new Schema({
+  text: { type: String },
+  is_correct: { type: Boolean, default: false },
+});
 
 // Question Schema
 const questionSchema = new Schema({
   text: { type: String },
-  points: { type: Number },
-  options: [
-    {
-      text: { type: String },
-      is_correct: { type: Boolean },
-    },
-  ],
+  points: { type: Number, default: 1 },
+  options: { type: [optionSchema] },
   created_at: { type: Date, default: Date.now },
 });
 
@@ -20,10 +20,8 @@ const examSchema = new Schema(
   {
     exam_name: { type: String },
     description: { type: String },
-    questions: [questionSchema],
-    created_by: { type: Schema.Types.ObjectId, ref: 'User' },
-    class_ids: [{ type: Schema.Types.ObjectId, ref: 'Class' }],
-    scheduled_date: { type: Date },
+    questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     duration_minutes: { type: Number },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
@@ -33,16 +31,12 @@ const examSchema = new Schema(
 const examinationSchema = new Schema(
   {
     exam_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam' },
+    question_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
     class_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
     student_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    access_keys: [
-      {
-        key: { type: String },
-        expires_at: { type: Date },
-      },
-    ],
+    access_keys: { type: String },
     started_at: { type: Date, default: Date.now },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true },
 );
@@ -50,19 +44,15 @@ const examinationSchema = new Schema(
 // Result Schema
 const resultSchema = new Schema(
   {
-    examination_id: { type: Schema.Types.ObjectId, ref: 'Examination' },
-    exam_id: { type: Schema.Types.ObjectId, ref: 'Exam' },
-    student_id: { type: Schema.Types.ObjectId, ref: 'User' },
+    examination_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Examination' },
+    student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     score: { type: Number },
     submitted_at: { type: Date, default: Date.now },
   },
   { timestamps: true },
 );
 
-export const ExaminationModel = model<Document & { [key: string]: any }>(
-  'Examination',
-  examinationSchema,
-);
+export const ExaminationModel = model<Examination & Document>('Examination', examinationSchema);
 export const ResultModel = model<Result & Document>('Result', resultSchema);
 export const QuestionModel = model<Question & Document>('Question', questionSchema);
 export const ExamModel = model<Exam & Document>('Exam', examSchema);

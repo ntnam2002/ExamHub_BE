@@ -5,16 +5,18 @@ import { compare, hash } from 'bcrypt';
 import { generateTokens } from '@/auth/authUtils';
 import { HttpException } from '@/helpers/exceptions/httpException';
 import { IClass, IDepartment } from '@/interfaces/admin.interface';
+import { redis } from '@/database/redis.database';
+import { OK } from '@/helpers/valid_responses/success.response';
+import { saveRefreshTokenToRedis } from '@/utils/TokenRedis';
 
 @Service()
 export class AdminService {
   public async loginAdmin(data: IAdmin): Promise<any> {
     try {
       const { username, password } = data;
-      console.log('data', data);
-      console.log('username', username);
+
       const findAdmin = await AdminModel.findOne({ username: username });
-      console.log('findAdmin', findAdmin);
+
       if (!findAdmin) throw new Error('Admin not found');
       const comparePassword = await compare(password, findAdmin.password);
       if (!comparePassword) throw new Error('Password not matching');
@@ -23,8 +25,9 @@ export class AdminService {
         _role: findAdmin.role,
       });
       const usernameAdmin = findAdmin.username;
-      console.log('usernameAdmin', usernameAdmin);
+
       const role = findAdmin.role;
+      await saveRefreshTokenToRedis(findAdmin._id, refreshToken);
       return { usernameAdmin, role, refreshToken, accessToken };
     } catch (error) {
       throw new HttpException(400, error.message);
@@ -50,6 +53,13 @@ export class AdminService {
         _role: newAdmin.role,
       });
       return { refreshToken, accessToken };
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
+  public async logOutAdmin(userId: string): Promise<any> {
+    try {
+      await redis.del(`refreshToken:${userId}`);
     } catch (error) {
       throw new HttpException(400, error.message);
     }
@@ -207,20 +217,26 @@ export class AdminService {
   public async updateDepartment(departmentId: string, data: IDepartment) {
     try {
       const { department_name, teacher_ids, class_ids } = data;
-      const query: any = {};
+      const updateData: any = {};
 
       if (department_name) {
-        query.department_name = { $regex: department_name, $options: 'i' };
+        updateData.department_name = department_name;
       }
 
       if (teacher_ids) {
-        query.teacher_ids = teacher_ids;
+        updateData.teacher_ids = teacher_ids;
       }
 
       if (class_ids) {
-        query.class_ids = class_ids;
+        updateData.class_ids = class_ids;
       }
-      const updatedDepartment = await DepartmentModel.findOneAndUpdate({ query });
+
+      const updatedDepartment = await DepartmentModel.findOneAndUpdate(
+        { _id: departmentId },
+        updateData,
+        { new: true },
+      );
+
       if (!updatedDepartment) throw new Error('Department not found');
       return updatedDepartment;
     } catch (error) {
