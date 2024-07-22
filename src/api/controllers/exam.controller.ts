@@ -5,12 +5,13 @@ import { HttpException } from '@/exceptions/httpException';
 import { OK, Created, NoContent } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 import { ExamService } from '../services/exam.service';
+import { IExamination } from '@/interfaces/exam.interface';
 
 @Service()
 export class ExamController {
   private examService = Container.get(ExamService);
 
-  public async getAllQuestions(req: Request, res: Response, next: NextFunction) {
+  public getAllQuestions = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const questions = await this.examService.getAllQuestions();
       new OK({
@@ -20,9 +21,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async createQuestion(req: Request, res: Response, next: NextFunction) {
+  public createQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const question = await this.examService.createQuestion(req.body);
       new Created({
@@ -32,9 +33,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async getQuestionById(req: Request, res: Response, next: NextFunction) {
+  public getQuestionById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const question = await this.examService.getQuestionById(req.params.id);
       new OK({
@@ -44,9 +45,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async updateQuestion(req: Request, res: Response, next: NextFunction) {
+  public updateQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const question = await this.examService.updateQuestion(req.params.id, req.body);
       new OK({
@@ -56,20 +57,20 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async deleteQuestion(req: Request, res: Response, next: NextFunction) {
+  public deleteQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
       await this.examService.deleteQuestion(req.params.id);
-      new NoContent({
+      new OK({
         message: 'Question deleted successfully',
       }).send(res);
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async getExams(req: Request, res: Response, next: NextFunction) {
+  public getExams = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const exams = await this.examService.getExams();
       new OK({
@@ -79,9 +80,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async getExamById(req: Request, res: Response, next: NextFunction) {
+  public getExamById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const exam = await this.examService.getExamById(req.params.id);
       new OK({
@@ -91,9 +92,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async createExam(req: Request, res: Response, next: NextFunction) {
+  public createExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const exam = await this.examService.createExam(req.body);
       new Created({
@@ -103,9 +104,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async updateExam(req: Request, res: Response, next: NextFunction) {
+  public updateExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const exam = await this.examService.updateExam(req.params.id, req.body);
       new OK({
@@ -115,22 +116,23 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async deleteExam(req: Request, res: Response, next: NextFunction) {
+  public deleteExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
       await this.examService.deleteExam(req.params.id);
-      new NoContent({
+      new OK({
         message: 'Exam deleted successfully',
       }).send(res);
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async addQuestionToExam(req: Request, res: Response, next: NextFunction) {
+  public addQuestionToExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { examId, questionId } = req.body;
+
       const exam = await this.examService.addQuestionToExam(examId, questionId);
       new OK({
         message: 'Question added to exam successfully',
@@ -139,9 +141,9 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
 
-  public async removeQuestionFromExam(req: Request, res: Response, next: NextFunction) {
+  public removeQuestionFromExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { examId, questionId } = req.body;
       const exam = await this.examService.removeQuestionFromExam(examId, questionId);
@@ -152,5 +154,121 @@ export class ExamController {
     } catch (error) {
       next(new HttpException(400, error.message));
     }
-  }
+  };
+  public getExaminations = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const examinations: IExamination[] = await this.examService.getExaminations();
+      res.json({ data: examinations });
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+  public getExaminationByStudentId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const studentId: string = req.params.id;
+      const examinations: IExamination[] = await this.examService.getExaminationByStudentId(
+        studentId,
+      );
+      new OK({ message: 'Get examinations by student ID success', data: examinations }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+  public createExamination = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const newExamination: IExamination = await this.examService.createExamination(req.body);
+      res.status(201).json({ data: newExamination });
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+
+  public getExaminationById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const examinationId: string = req.params.id;
+      const examination: IExamination | null = await this.examService.getExaminationById(
+        examinationId,
+      );
+      if (!examination) {
+        throw new HttpException(404, 'Examination not found');
+      }
+      res.json({ data: examination });
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+
+  public updateExamination = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const examinationId: string = req.params.id;
+      const updatedExamination: IExamination | null = await this.examService.updateExamination(
+        examinationId,
+        req.body,
+      );
+      if (!updatedExamination) {
+        throw new HttpException(404, 'Examination not found');
+      }
+      res.json({ data: updatedExamination });
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+
+  public deleteExamination = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const examinationId: string = req.params.id;
+      const deletedExamination: IExamination | null = await this.examService.deleteExamination(
+        examinationId,
+      );
+      if (!deletedExamination) {
+        throw new HttpException(404, 'Examination not found');
+      }
+      res.json({ data: deletedExamination });
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+
+  public calculateScore = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { examId, studentId } = req.params;
+      const { answers } = req.body;
+
+      if (!examId || !studentId || !answers || !Array.isArray(answers) || answers.length === 0) {
+        throw new HttpException(400, 'Invalid request body');
+      }
+
+      const result = await this.examService.calculateScore(examId, studentId, answers);
+      new Created({
+        message: 'Score calculated successfully',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
 }

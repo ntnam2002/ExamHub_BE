@@ -7,6 +7,7 @@ export interface Result {
 
 export interface Question {
   text: string;
+  points: number;
   options: Option[];
   created_at: Date;
   updated_at: Date;
@@ -18,6 +19,7 @@ export interface IQuestion {
 }
 
 export interface Option {
+  _id: string;
   text: string;
   is_correct: boolean;
 }
@@ -50,7 +52,18 @@ export interface Examination {
   student_id: string[];
   access_keys: string;
   started_at: Date;
+  total_score: number;
   created_by: string;
   created_at: Date;
   updated_at: Date;
+}
+export interface IExamination {
+  exam_id: string;
+  question_id: string[];
+  class_id: string[];
+  student_id: string[];
+  access_keys?: string;
+  started_at?: Date;
+  created_by: string;
+  total_score?: number;
 }

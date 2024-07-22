@@ -21,7 +21,7 @@ export class AdminRoute implements Routes {
       //ValidationMiddleware(CreateUserDto),
       this.admin.loginAdmin,
     );
-    this.router.post(`${this.path}logout`, AuthAdminMiddleware, this.admin.logOutAdmin);
+    this.router.post(`${this.path}logout`, this.admin.logOutAdmin);
     this.router.post(`${this.path}register`, AuthAdminMiddleware, this.admin.registerAdmin);
     this.router.get(`${this.path}getAllClass`, this.admin.getAllClass);
     this.router.post(`${this.path}addClass`, this.admin.addClass);

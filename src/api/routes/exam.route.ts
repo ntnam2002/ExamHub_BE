@@ -12,7 +12,7 @@ export class ExamRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/questions`, this.examController.getAllQuestions);
+    this.router.get(`${this.path}/allquestions`, this.examController.getAllQuestions);
     this.router.post(`${this.path}/questions`, this.examController.createQuestion);
     this.router.get(`${this.path}/questions/:id`, this.examController.getQuestionById);
     this.router.put(`${this.path}/questions/:id`, this.examController.updateQuestion);
@@ -26,5 +26,16 @@ export class ExamRoute implements Routes {
 
     this.router.post(`${this.path}/add-question`, this.examController.addQuestionToExam);
     this.router.post(`${this.path}/remove-question`, this.examController.removeQuestionFromExam);
+    this.router.post(`${this.path}/:examId/score/:studentId`, this.examController.calculateScore);
+
+    this.router.get(`${this.path}/examinations`, this.examController.getExaminations);
+    this.router.get(`${this.path}/examinations/:id`, this.examController.getExaminationById);
+    this.router.post(`${this.path}/examinations`, this.examController.createExamination);
+    this.router.put(`${this.path}/examinations/:id`, this.examController.updateExamination);
+    this.router.delete(`${this.path}/examinations/:id`, this.examController.deleteExamination);
+    this.router.get(
+      `${this.path}/examinations/student/:studentId`,
+      this.examController.getExaminationByStudentId,
+    );
   }
 }

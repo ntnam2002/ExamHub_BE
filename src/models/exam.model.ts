@@ -37,6 +37,7 @@ const examinationSchema = new Schema(
     access_keys: { type: String },
     started_at: { type: Date, default: Date.now },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    total_score: { type: Number },
   },
   { timestamps: true },
 );
