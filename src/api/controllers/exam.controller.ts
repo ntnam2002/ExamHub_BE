@@ -271,4 +271,21 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
+  public getScoreByStudent = async(req: Request, res: Response, next: NextFunction)=>{
+    try {
+      const {studentId} = req.params;
+    if(!studentId){
+      throw new HttpException(401, "No Student ID")
+    }
+    const getResult = await this.examService.getResultsByStudent(studentId)
+    new OK({
+      message:'Get Score for Student Succesfully',
+      data:getResult,
+    }).send(res);
+    } catch (error) {
+      
+    }
+    
+  }
 }
