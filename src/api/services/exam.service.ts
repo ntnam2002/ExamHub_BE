@@ -229,7 +229,6 @@ export class ExamService {
   }
   public async calculateScore(examId: string, studentId: string, answers: any[]) {
     try {
-      console.log('answers', examId);
       // Tìm kiếm thông tin của bài thi trong examination collection
       const examination = await ExaminationModel.findOne({
         examId,
