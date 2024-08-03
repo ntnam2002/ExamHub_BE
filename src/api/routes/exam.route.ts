@@ -39,7 +39,7 @@ export class ExamRoute implements Routes {
     this.router.put(`${this.path}/examinations/:id`, this.examController.updateExamination);
     this.router.delete(`${this.path}/examinations/:id`, this.examController.deleteExamination);
     this.router.post(
-      `${this.path}/examinations/addStudent`,
+      `${this.path}/examinations/addStudent/:examinationId`,
       this.examController.addStudentToExamination,
     );
     this.router.get(

@@ -6,6 +6,7 @@ import {
   studentAddToExamination,
 } from '@/interfaces/exam.interface';
 import { ExaminationModel, ExamModel, QuestionModel, ResultModel } from '@/models/exam.model';
+import { ClassModel } from '@/models/users.model';
 
 import { Service } from 'typedi';
 
@@ -156,15 +157,6 @@ export class ExamService {
     }
   }
 
-  public async getExaminationsByStudent(studentId: string): Promise<IExamination[]> {
-    try {
-      const examinations = await ExaminationModel.find({ studentId });
-      return examinations;
-    } catch (error) {
-      throw new HttpException(400, error.message);
-    }
-  }
-
   public async getExaminationById(examinationId: string): Promise<IExamination | null> {
     try {
       const examination = await ExaminationModel.findById(examinationId);
@@ -190,6 +182,7 @@ export class ExamService {
 
   public async getExaminationByStudentId(studentId: string): Promise<any> {
     try {
+      const findClass = await ExaminationModel;
       const examinations = await ExaminationModel.find({ student_id: studentId }).populate(
         'exam_id',
       );
@@ -242,18 +235,33 @@ export class ExamService {
   public async addStudentToExamination(examinationId: string, data: studentAddToExamination) {
     try {
       const { student_ids, class_ids } = data;
-      if (!student_ids || !class_ids)
-        throw new HttpException(400, 'Student ID or Class ID is required');
+      console.log('student_ids', student_ids);
+      console.log('class_ids', class_ids);
+      // Fetch the examination by ID
+      const examination = await ExaminationModel.findById(examinationId);
+      console.log('examination', examination);
+      if (!examination) {
+        throw new HttpException(404, 'Examination not found');
+      }
+
+      // Add student IDs to the examination
       if (student_ids) {
-        const examination = await ExaminationModel.findById(examinationId);
-        if (!examination) throw new HttpException(404, 'Examination not found');
+        console.log('student_ids', student_ids);
         examination.student_id.push(...student_ids);
       }
+
+      // Add class to the examination
       if (class_ids) {
-        const examination = await ExaminationModel.findById(examinationId);
-        if (!examination) throw new HttpException(404, 'Examination not found');
+        console.log('class_ids', class_ids);
+        const findClass = await ClassModel.find({ _id: class_ids });
+        if (!findClass) {
+          throw new HttpException(404, 'Class not found');
+        }
         examination.class_id.push(...class_ids);
       }
+
+      // Save the updated examination
+      await examination.save();
     } catch (error) {
       throw new HttpException(400, error.message);
     }

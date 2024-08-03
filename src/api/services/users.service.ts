@@ -3,7 +3,6 @@ import { Service } from 'typedi';
 import { HttpException } from '@/exceptions/HttpException';
 import { IUser, User, UserRegister } from '@interfaces/users.interface';
 import { ClassModel, DepartmentModel, UserModel } from '@models/users.model';
-
 import { generateTokens } from '@/auth/authUtils';
 
 @Service()

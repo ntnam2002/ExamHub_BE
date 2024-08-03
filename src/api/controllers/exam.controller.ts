@@ -5,7 +5,7 @@ import { HttpException } from '@/exceptions/HttpException';
 import { OK, Created } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 import { ExamService } from '../services/exam.service';
-import { IExamination } from '@/interfaces/exam.interface';
+import { IExamination, studentAddToExamination } from '@/interfaces/exam.interface';
 
 @Service()
 export class ExamController {
@@ -183,11 +183,11 @@ export class ExamController {
 
   public addStudentToExamination = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { studentId, examinationId } = req.body;
-      const examination = await this.examService.addStudentToExamination(examinationId, studentId);
+      const { examinationId } = req.params;
+      const data: studentAddToExamination = req.body;
+      await this.examService.addStudentToExamination(examinationId, data);
       new OK({
         message: 'Student added to examination successfully',
-        data: examination,
       }).send(res);
     } catch (error) {
       next(new HttpException(400, error.message));

@@ -68,6 +68,5 @@ export interface IExamination {
 }
 export interface studentAddToExamination {
   student_ids: string[];
-
   class_ids: string[];
 }

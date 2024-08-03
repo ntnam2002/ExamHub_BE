@@ -5,6 +5,7 @@ import { AdminService } from '../services/admin.service';
 import { OK } from '../../helpers/valid_responses/success.response';
 import { HttpException } from '@/helpers/exceptions/httpException';
 import { IClass, IDepartment } from '@/interfaces/admin.interface';
+
 export class AdminController {
   public admin = Container.get(AdminService);
 
