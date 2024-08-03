@@ -1,10 +1,9 @@
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
-import { ACCESS_TOKEN, SECRET_KEY } from '@config';
-import { HttpException } from '@exceptions/httpException';
+import { ACCESS_TOKEN } from '@config';
 import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 import { AdminModel, UserModel } from '@models/users.model';
-import { verifyJwtToken } from '@/auth/authUtils';
+import { HttpException } from '@/exceptions/HttpException';
 
 const getAuthorization = req => {
   const cookie = req.cookies['Authorization'];

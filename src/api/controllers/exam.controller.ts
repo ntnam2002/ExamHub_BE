@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { Request, Response, NextFunction } from 'express';
 
-import { HttpException } from '@/exceptions/httpException';
+import { HttpException } from '@/exceptions/HttpException';
 import { OK, Created } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 import { ExamService } from '../services/exam.service';
@@ -155,6 +155,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public getExaminations = async (
     req: Request,
     res: Response,
@@ -167,6 +168,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public getExaminationByStudentId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log('dakdadakdmdklwm');
@@ -178,6 +180,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public addStudentToExamination = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { studentId, examinationId } = req.body;
@@ -190,6 +193,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public addExamToExamination = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { examId, examinationId } = req.body;
@@ -202,6 +206,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public getExaminationData = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { examinationId } = req.params;
@@ -214,6 +219,7 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
+
   public createExamination = async (
     req: Request,
     res: Response,

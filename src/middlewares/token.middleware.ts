@@ -1,6 +1,5 @@
 import { redis } from '@/database/redis.database';
 import { Request, Response, NextFunction } from 'express';
-
 import jwt from 'jsonwebtoken';
 
 export const checkTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {

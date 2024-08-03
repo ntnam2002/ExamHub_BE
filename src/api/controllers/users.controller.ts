@@ -7,6 +7,7 @@ import { IUser, User, UserRegister } from '@/interfaces/users.interface';
 
 export class UserController {
   public user = Container.get(UserService);
+
   public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: IUser = req.body;
@@ -24,6 +25,7 @@ export class UserController {
       next(error);
     }
   };
+
   public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: UserRegister = req.body;
@@ -39,6 +41,7 @@ export class UserController {
       next(error);
     }
   };
+
   public getAllStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.user.getAllStudents();
@@ -51,6 +54,7 @@ export class UserController {
       next(error);
     }
   };
+
   public getStudentById = async (
     req: Request,
     res: Response,
@@ -67,6 +71,7 @@ export class UserController {
       next(error);
     }
   };
+
   public deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.params.id;
@@ -79,6 +84,7 @@ export class UserController {
       next(error);
     }
   };
+
   public getAllTeacher = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.user.getAllTeachers();
@@ -90,6 +96,7 @@ export class UserController {
       next(error);
     }
   };
+
   public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.params.id;

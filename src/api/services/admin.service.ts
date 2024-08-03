@@ -6,7 +6,7 @@ import { generateTokens } from '@/auth/authUtils';
 import { HttpException } from '@/helpers/exceptions/httpException';
 import { IClass, IDepartment } from '@/interfaces/admin.interface';
 import { redis } from '@/database/redis.database';
-import { OK } from '@/helpers/valid_responses/success.response';
+
 import { saveRefreshTokenToRedis } from '@/utils/TokenRedis';
 
 @Service()
@@ -57,6 +57,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async logOutAdmin(userId: string): Promise<any> {
     try {
       await redis.del(`refreshToken:${userId}`);
@@ -64,6 +65,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAdmin(): Promise<any> {
     try {
       const findAdmin = await AdminModel.find({}).select('-password');
@@ -73,6 +75,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAdminByName(username: string): Promise<any> {
     try {
       const findAdmin = await AdminModel.findOne({ username }).select('-password');
@@ -82,6 +85,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async updatePasswordAdmin(data: IAdmin): Promise<any> {
     try {
       const { username, password } = data;
@@ -94,6 +98,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async deleteAdmin(username: string): Promise<any> {
     try {
       const findAdmin = await AdminModel.findOneAndDelete({ username });
@@ -103,6 +108,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAllClass(): Promise<any> {
     try {
       const findClass = await ClassModel.find({});
@@ -112,6 +118,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async addClass(className: string) {
     try {
       const findClass = await ClassModel.findOne({ className });
@@ -124,6 +131,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async deleteClass(classId: string) {
     try {
       const findClass = await ClassModel.findOneAndDelete({ classId });
@@ -133,6 +141,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async updateClass(classId: string, data: IClass) {
     try {
       const { class_name, teacherId, student_ids } = data;
@@ -149,6 +158,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async searchClass(data: IClass): Promise<any> {
     try {
       const { class_name, teacherId, student_ids } = data;
@@ -174,6 +184,7 @@ export class AdminService {
       throw new HttpException(500, error.message);
     }
   }
+
   public async addStudentToClass(classId: string, studentId: string) {
     try {
       const findClass = await ClassModel.findOne({ classId });
@@ -184,6 +195,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAllDepartment() {
     try {
       const departments = await DepartmentModel.find({});
@@ -193,6 +205,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async addDepartment(department_name: string) {
     try {
       const findDepartment = await DepartmentModel.findOne({ department_name });
@@ -205,6 +218,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async deleteDepartment(departmentId: string) {
     try {
       const findDepartment = await DepartmentModel.findOneAndDelete({ departmentId });
@@ -214,6 +228,7 @@ export class AdminService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async updateDepartment(departmentId: string, data: IDepartment) {
     try {
       const { department_name, teacher_ids, class_ids } = data;

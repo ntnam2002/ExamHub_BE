@@ -1,9 +1,9 @@
 import { compare, hash } from 'bcrypt';
 import { Service } from 'typedi';
-import { HttpException } from '@exceptions/httpException';
-import { IAdmin, IUser, User, UserRegister } from '@interfaces/users.interface';
+import { HttpException } from '@/exceptions/HttpException';
+import { IUser, User, UserRegister } from '@interfaces/users.interface';
 import { ClassModel, DepartmentModel, UserModel } from '@models/users.model';
-import { log } from 'console';
+
 import { generateTokens } from '@/auth/authUtils';
 
 @Service()
@@ -26,6 +26,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async register(data: UserRegister): Promise<any> {
     try {
       const { username, password, email, role, class_ids, department_id } = data;
@@ -40,6 +41,8 @@ export class UserService {
       const findDuplicateEmail = await UserModel.findOne({ email });
       if (findDuplicateEmail) throw new Error('Email already exists');
       const hashedPassword = await hash(password, 10);
+      if (role !== 'student' && role !== 'teacher')
+        throw new Error('Role must be student or teacher');
       data.password = hashedPassword;
       const newUser = new UserModel({
         ...data,
@@ -54,6 +57,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async deleteUser(userId: string): Promise<any> {
     try {
       const findUser = await UserModel.findByIdAndDelete(userId);
@@ -63,6 +67,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAllStudents(): Promise<any> {
     try {
       const students = await UserModel.find({ role: 'student' });
@@ -71,6 +76,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getAllTeachers(): Promise<any> {
     try {
       const teachers = await UserModel.find({ role: 'teacher' });
@@ -79,6 +85,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async updateUser(userId: string, data: User): Promise<any> {
     try {
       const findUser = await UserModel.findOneAndUpdate(
@@ -97,6 +104,7 @@ export class UserService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getStudentById(userId: string): Promise<any> {
     try {
       const findStudent = await UserModel.findOne({ _id: userId, role: 'student' });

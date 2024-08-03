@@ -1,4 +1,4 @@
-import { HttpException } from '@/exceptions/httpException';
+import { HttpException } from '@/exceptions/HttpException';
 import {
   IExam,
   IExamination,
@@ -164,6 +164,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getExaminationById(examinationId: string): Promise<IExamination | null> {
     try {
       const examination = await ExaminationModel.findById(examinationId);
@@ -172,6 +173,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async addExamToExamination(examinationId: string, examId: string): Promise<any> {
     try {
       const examination = await ExaminationModel.findById(examinationId);
@@ -185,6 +187,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getExaminationByStudentId(studentId: string): Promise<any> {
     try {
       const examinations = await ExaminationModel.find({ student_id: studentId }).populate(
@@ -196,6 +199,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async getExaminationData(examinationId: string): Promise<any> {
     try {
       const examination = await ExaminationModel.find({ _id: examinationId }).select(
@@ -219,6 +223,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async createExamination(data: IExamination) {
     try {
       const questions = await QuestionModel.find({ _id: { $in: data.question_id } });
@@ -233,6 +238,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async addStudentToExamination(examinationId: string, data: studentAddToExamination) {
     try {
       const { student_ids, class_ids } = data;
@@ -252,6 +258,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async updateExamination(
     examinationId: string,
     data: Partial<IExamination>,
@@ -341,6 +348,7 @@ export class ExamService {
       throw new HttpException(statusCode, message);
     }
   }
+
   public async getScore(studentId: string, examinationId: string) {
     try {
       const results = await ResultModel.find({

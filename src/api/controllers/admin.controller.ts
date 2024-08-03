@@ -7,6 +7,7 @@ import { HttpException } from '@/helpers/exceptions/httpException';
 import { IClass, IDepartment } from '@/interfaces/admin.interface';
 export class AdminController {
   public admin = Container.get(AdminService);
+
   public loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -26,6 +27,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public registerAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: IAdmin = req.body;
@@ -41,6 +43,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public logOutAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.body;
@@ -52,6 +55,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public getAllClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const getAllClass = await this.admin.getAllClass();
@@ -63,6 +67,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public addClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { className } = req.body;
@@ -76,6 +81,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public deleteClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params;
@@ -89,6 +95,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public updateClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params;
@@ -102,6 +109,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public searchClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: IClass = req.body;
@@ -114,6 +122,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public addStudentToClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId, studentId } = req.body;
@@ -126,6 +135,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public getAllDepartment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const getAllDepartment = await this.admin.getAllDepartment();
@@ -133,8 +143,11 @@ export class AdminController {
         message: 'Get all department success',
         data: getAllDepartment,
       }).send(res);
-    } catch (error) {}
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
   };
+
   public addDepartment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { department_name } = req.body;
@@ -147,6 +160,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public deleteDepartment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { departmentId } = req.params;
@@ -159,6 +173,7 @@ export class AdminController {
       next(new HttpException(400, error.message));
     }
   };
+
   public updateDepartment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { departmentId } = req.params;

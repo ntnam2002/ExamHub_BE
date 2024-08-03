@@ -1,9 +1,8 @@
 import { Router } from 'express';
 
-import { CreateUserDto } from '@dtos/users.dto';
 import { Routes } from '@interfaces/routes.interface';
-import { AuthAdminMiddleware, AuthMiddleware } from '@middlewares/auth.middleware';
-import { ValidationMiddleware } from '@middlewares/validation.middleware';
+import { AuthAdminMiddleware } from '@middlewares/auth.middleware';
+
 import { AdminController } from '../controllers/admin.controller';
 
 export class AdminRoute implements Routes {

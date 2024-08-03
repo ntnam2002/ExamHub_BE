@@ -1,5 +1,5 @@
 import mongoose, { connect, set } from 'mongoose';
-import { NODE_ENV, DB_HOST, DB_PORT, DB_DATABASE } from '@config';
+import { NODE_ENV } from '@config';
 
 export const dbConnection = async () => {
   const dbConfig = {
