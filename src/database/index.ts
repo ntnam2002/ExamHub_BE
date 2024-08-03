@@ -1,4 +1,4 @@
-import { connect, set } from 'mongoose';
+import mongoose, { connect, set } from 'mongoose';
 import { NODE_ENV, DB_HOST, DB_PORT, DB_DATABASE } from '@config';
 
 export const dbConnection = async () => {
@@ -9,6 +9,6 @@ export const dbConnection = async () => {
   if (NODE_ENV !== 'production') {
     set('debug', true);
   }
-
+  mongoose.set('strictQuery', false);
   await connect(dbConfig.url);
 };

@@ -65,5 +65,9 @@ export interface IExamination {
   access_keys?: string;
   started_at?: Date;
   created_by: string;
-  total_score?: number;
+}
+export interface studentAddToExamination {
+  student_ids: string[];
+
+  class_ids: string[];
 }

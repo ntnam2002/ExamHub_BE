@@ -2,7 +2,7 @@ import { Service } from 'typedi';
 import { Request, Response, NextFunction } from 'express';
 
 import { HttpException } from '@/exceptions/httpException';
-import { OK, Created, NoContent } from '@/helpers/valid_responses/success.response';
+import { OK, Created } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 import { ExamService } from '../services/exam.service';
 import { IExamination } from '@/interfaces/exam.interface';
@@ -167,17 +167,49 @@ export class ExamController {
       next(new HttpException(400, error.message));
     }
   };
-  public getExaminationByStudentId = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
+  public getExaminationByStudentId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const studentId: string = req.params.id;
-      const examinations: IExamination[] = await this.examService.getExaminationByStudentId(
-        studentId,
-      );
+      console.log('dakdadakdmdklwm');
+      const { studentId } = req.params;
+      console.log(studentId);
+      const examinations = await this.examService.getExaminationByStudentId(studentId);
       new OK({ message: 'Get examinations by student ID success', data: examinations }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+  public addStudentToExamination = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { studentId, examinationId } = req.body;
+      const examination = await this.examService.addStudentToExamination(examinationId, studentId);
+      new OK({
+        message: 'Student added to examination successfully',
+        data: examination,
+      }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+  public addExamToExamination = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { examId, examinationId } = req.body;
+      const examination = await this.examService.addExamToExamination(examinationId, examId);
+      new OK({
+        message: 'Exam added to examination successfully',
+        data: examination,
+      }).send(res);
+    } catch (error) {
+      next(new HttpException(400, error.message));
+    }
+  };
+  public getExaminationData = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { examinationId } = req.params;
+      const examinationData = await this.examService.getExaminationData(examinationId);
+      new OK({
+        message: 'Get examination data success',
+        data: examinationData,
+      }).send(res);
     } catch (error) {
       next(new HttpException(400, error.message));
     }
@@ -272,20 +304,20 @@ export class ExamController {
     }
   };
 
-  public getScoreByStudent = async(req: Request, res: Response, next: NextFunction)=>{
+  public getScore = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {studentId} = req.params;
-    if(!studentId){
-      throw new HttpException(401, "No Student ID")
-    }
-    const getResult = await this.examService.getResultsByStudent(studentId)
-    new OK({
-      message:'Get Score for Student Succesfully',
-      data:getResult,
-    }).send(res);
+      const { studentId } = req.params;
+      const { examinationId } = req.params;
+      if (!studentId) {
+        throw new HttpException(401, 'No Student ID');
+      }
+      const getResult = await this.examService.getScore(studentId, examinationId);
+      new OK({
+        message: 'Get Score for Student Succesfully',
+        data: getResult,
+      }).send(res);
     } catch (error) {
-      
+      next(new HttpException(400, error.message));
     }
-    
-  }
+  };
 }

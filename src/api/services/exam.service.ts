@@ -1,6 +1,12 @@
 import { HttpException } from '@/exceptions/httpException';
-import { IExam, IExamination, IQuestion } from '@/interfaces/exam.interface';
+import {
+  IExam,
+  IExamination,
+  IQuestion,
+  studentAddToExamination,
+} from '@/interfaces/exam.interface';
 import { ExaminationModel, ExamModel, QuestionModel, ResultModel } from '@/models/exam.model';
+
 import { Service } from 'typedi';
 
 @Service()
@@ -166,43 +172,86 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
-
+  public async addExamToExamination(examinationId: string, examId: string): Promise<any> {
+    try {
+      const examination = await ExaminationModel.findById(examinationId);
+      if (!examination) throw new HttpException(404, 'Examination not found');
+      const exam = await ExamModel.findById(examId);
+      if (!exam) throw new HttpException(404, 'Exam not found');
+      examination.exam_id = exam._id;
+      await examination.save();
+      return examination;
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
   public async getExaminationByStudentId(studentId: string): Promise<any> {
     try {
-      const examinations = await ExaminationModel.find({ studentId: studentId }).populate(
+      const examinations = await ExaminationModel.find({ student_id: studentId }).populate(
         'exam_id',
       );
-      console.log('examinations', examinations);
+
+      return examinations;
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
+  public async getExaminationData(examinationId: string): Promise<any> {
+    try {
+      const examination = await ExaminationModel.find({ _id: examinationId }).select(
+        '-access_keys -created_by -started_at -createdAt -updatedAt -__v',
+      );
 
       const populatedExaminations = await Promise.all(
-        examinations.map(async exam => {
+        examination.map(async exam => {
           const examObj = await ExamModel.findById(exam.exam_id);
           const questionIds = examObj.questions;
-          console.log('questionIds', questionIds);
-          const questions = await QuestionModel.find({ _id: { $in: questionIds } });
 
+          const questions = await QuestionModel.find({ _id: { $in: questionIds } });
           return {
             ...exam.toJSON(),
             questions: questions.map(question => question.toJSON()),
           };
         }),
       );
-
       return populatedExaminations;
     } catch (error) {
       throw new HttpException(400, error.message);
     }
   }
-
-  public async createExamination(data: IExamination): Promise<IExamination> {
+  public async createExamination(data: IExamination) {
     try {
-      const newExamination = await ExaminationModel.create(data);
+      const questions = await QuestionModel.find({ _id: { $in: data.question_id } });
+      if (questions.length !== data.question_id.length) {
+        throw new HttpException(404, 'One or more questions not found');
+      }
+      const totalScore = questions.reduce((sum, question) => sum + question.points, 0);
+      const newData = { ...data, total_score: totalScore };
+      const newExamination = await ExaminationModel.create(newData);
       return newExamination;
     } catch (error) {
       throw new HttpException(400, error.message);
     }
   }
-
+  public async addStudentToExamination(examinationId: string, data: studentAddToExamination) {
+    try {
+      const { student_ids, class_ids } = data;
+      if (!student_ids || !class_ids)
+        throw new HttpException(400, 'Student ID or Class ID is required');
+      if (student_ids) {
+        const examination = await ExaminationModel.findById(examinationId);
+        if (!examination) throw new HttpException(404, 'Examination not found');
+        examination.student_id.push(...student_ids);
+      }
+      if (class_ids) {
+        const examination = await ExaminationModel.findById(examinationId);
+        if (!examination) throw new HttpException(404, 'Examination not found');
+        examination.class_id.push(...class_ids);
+      }
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
   public async updateExamination(
     examinationId: string,
     data: Partial<IExamination>,
@@ -227,6 +276,7 @@ export class ExamService {
       throw new HttpException(400, error.message);
     }
   }
+
   public async calculateScore(examId: string, studentId: string, answers: any[]) {
     try {
       // Tìm kiếm thông tin của bài thi trong examination collection
@@ -282,20 +332,16 @@ export class ExamService {
         student_id: studentId,
         score: totalScore,
       });
-
-      // Cập nhật điểm tổng cho examination
-      examination.total_score = totalScore;
-      await examination.save();
-
+      // Xóa studentId khỏi examination
+      examination.student_id = examination.student_id.filter(id => id !== studentId);
       return result;
     } catch (error) {
       const statusCode = error instanceof HttpException ? error.status : 500;
       const message = error instanceof HttpException ? error.message : 'Internal server error';
-      // Có thể xem xét ghi log lỗi ở đây cho các vấn đề phía máy chủ
       throw new HttpException(statusCode, message);
     }
   }
-  public async getResultsByStudent(studentId: string, examinationId: string) {
+  public async getScore(studentId: string, examinationId: string) {
     try {
       const results = await ResultModel.find({
         student_id: studentId,
