@@ -33,7 +33,7 @@ export class ExamRoute implements Routes {
     this.router.post(`${this.path}/:examId/score/:studentId`, this.examController.calculateScore);
 
     // Routes for managing examination data
-    this.router.get(`${this.path}/examinations`, this.examController.getExaminations);
+    this.router.get(`${this.path}/examinations/getAll`, this.examController.getExaminations);
     this.router.get(`${this.path}/examinations/:id`, this.examController.getExaminationById);
     this.router.post(`${this.path}/examinations`, this.examController.createExamination);
     this.router.put(`${this.path}/examinations/:id`, this.examController.updateExamination);

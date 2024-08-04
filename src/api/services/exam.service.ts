@@ -150,7 +150,20 @@ export class ExamService {
   }
   public async getExaminations(): Promise<IExamination[]> {
     try {
-      const examinations = await ExaminationModel.find({});
+      const examinations = await ExaminationModel.find({})
+        .populate({
+          path: 'exam_id',
+          select: 'exam_name',
+        })
+        .populate({
+          path: 'class_id',
+          select: 'class_name', // Assuming 'class_name' is the field in Class model
+        })
+        .populate({
+          path: 'student_id',
+          select: 'username', // Assuming 'student_name' is the field in User model
+        });
+
       return examinations;
     } catch (error) {
       throw new HttpException(400, error.message);
@@ -182,7 +195,6 @@ export class ExamService {
 
   public async getExaminationByStudentId(studentId: string): Promise<any> {
     try {
-      const findClass = await ExaminationModel;
       const examinations = await ExaminationModel.find({ student_id: studentId }).populate(
         'exam_id',
       );
@@ -195,6 +207,7 @@ export class ExamService {
 
   public async getExaminationData(examinationId: string): Promise<any> {
     try {
+      console.log('getExaminationData');
       const examination = await ExaminationModel.find({ _id: examinationId }).select(
         '-access_keys -created_by -started_at -createdAt -updatedAt -__v',
       );
@@ -294,11 +307,13 @@ export class ExamService {
 
   public async calculateScore(examId: string, studentId: string, answers: any[]) {
     try {
+      console.log('calculateScore', examId, studentId, answers);
       // Tìm kiếm thông tin của bài thi trong examination collection
       const examination = await ExaminationModel.findOne({
-        examId,
-        studentId,
+        _id: examId,
+        student_id: studentId,
       });
+      console.log('examination', examination);
       if (!examination) {
         throw new HttpException(404, 'Examination not found');
       }

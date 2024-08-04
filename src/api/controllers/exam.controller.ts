@@ -171,9 +171,8 @@ export class ExamController {
 
   public getExaminationByStudentId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('dakdadakdmdklwm');
       const { studentId } = req.params;
-      console.log(studentId);
+
       const examinations = await this.examService.getExaminationByStudentId(studentId);
       new OK({ message: 'Get examinations by student ID success', data: examinations }).send(res);
     } catch (error) {
