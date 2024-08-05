@@ -157,11 +157,11 @@ export class ExamService {
         })
         .populate({
           path: 'class_id',
-          select: 'class_name', // Assuming 'class_name' is the field in Class model
+          select: 'class_name',
         })
         .populate({
           path: 'student_id',
-          select: 'username', // Assuming 'student_name' is the field in User model
+          select: 'username',
         });
 
       return examinations;
@@ -232,8 +232,15 @@ export class ExamService {
 
   public async createExamination(data: IExamination) {
     try {
-      const questions = await QuestionModel.find({ _id: { $in: data.question_id } });
-      if (questions.length !== data.question_id.length) {
+      console.log('createExamination', data);
+      const findExam = await ExamModel.findById(data.exam_id);
+      if (!findExam) {
+        throw new HttpException(404, 'Exam not found');
+      }
+
+      const questions = await QuestionModel.find({ _id: { $in: findExam.questions } });
+
+      if (!questions) {
         throw new HttpException(404, 'One or more questions not found');
       }
       const totalScore = questions.reduce((sum, question) => sum + question.points, 0);
@@ -248,24 +255,21 @@ export class ExamService {
   public async addStudentToExamination(examinationId: string, data: studentAddToExamination) {
     try {
       const { student_ids, class_ids } = data;
-      console.log('student_ids', student_ids);
-      console.log('class_ids', class_ids);
+
       // Fetch the examination by ID
       const examination = await ExaminationModel.findById(examinationId);
-      console.log('examination', examination);
+
       if (!examination) {
         throw new HttpException(404, 'Examination not found');
       }
 
       // Add student IDs to the examination
       if (student_ids) {
-        console.log('student_ids', student_ids);
         examination.student_id.push(...student_ids);
       }
 
       // Add class to the examination
       if (class_ids) {
-        console.log('class_ids', class_ids);
         const findClass = await ClassModel.find({ _id: class_ids });
         if (!findClass) {
           throw new HttpException(404, 'Class not found');
@@ -296,7 +300,7 @@ export class ExamService {
     }
   }
 
-  public async deleteExamination(examinationId: string): Promise<IExamination | null> {
+  public async deleteExamination(examinationId: string) {
     try {
       const deletedExamination = await ExaminationModel.findByIdAndDelete(examinationId);
       return deletedExamination;

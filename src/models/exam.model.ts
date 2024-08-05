@@ -31,7 +31,7 @@ const examSchema = new Schema(
 const examinationSchema = new Schema(
   {
     exam_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam' },
-    question_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+    //question_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
     class_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
     student_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     access_keys: { type: String },

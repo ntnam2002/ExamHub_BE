@@ -59,7 +59,7 @@ export interface Examination {
 }
 export interface IExamination {
   exam_id: string;
-  question_id: string[];
+  //question_id: string[];
   class_id: string[];
   student_id: string[];
   access_keys?: string;
