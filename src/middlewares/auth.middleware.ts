@@ -46,12 +46,15 @@ export const AuthAdminMiddleware = async (
 
     if (Authorization) {
       const { _id, role } = (await verify(Authorization, ACCESS_TOKEN)) as DataStoredInToken;
+
       const findUser = await AdminModel.findById(_id);
       if (role !== 'admin') {
         next(new HttpException(401, 'Wrong authentication token'));
       }
       if (findUser?.role === 'admin') {
         req.user = findUser;
+        req._id = _id;
+
         next();
       } else {
         next(new HttpException(401, 'Wrong authentication token ne'));

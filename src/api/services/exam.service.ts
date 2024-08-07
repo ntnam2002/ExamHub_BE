@@ -15,6 +15,7 @@ export class ExamService {
   public async getAllQuestions() {
     try {
       const questions = await QuestionModel.find({});
+
       return questions;
     } catch (error) {
       throw new HttpException(400, error.message);
@@ -207,7 +208,6 @@ export class ExamService {
 
   public async getExaminationData(examinationId: string): Promise<any> {
     try {
-      console.log('getExaminationData');
       const examination = await ExaminationModel.find({ _id: examinationId }).select(
         '-access_keys -created_by -started_at -createdAt -updatedAt -__v',
       );
@@ -230,9 +230,8 @@ export class ExamService {
     }
   }
 
-  public async createExamination(data: IExamination) {
+  public async createExamination(_idUser: string, data: IExamination) {
     try {
-      console.log('createExamination', data);
       const findExam = await ExamModel.findById(data.exam_id);
       if (!findExam) {
         throw new HttpException(404, 'Exam not found');
@@ -243,8 +242,14 @@ export class ExamService {
       if (!questions) {
         throw new HttpException(404, 'One or more questions not found');
       }
+
       const totalScore = questions.reduce((sum, question) => sum + question.points, 0);
-      const newData = { ...data, total_score: totalScore };
+
+      const studentId = data.student_id && data.student_id.length > 0 ? data.student_id : null;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id, ...newData } = { ...data, total_score: totalScore, student_id: studentId };
+
       const newExamination = await ExaminationModel.create(newData);
       return newExamination;
     } catch (error) {
@@ -311,13 +316,12 @@ export class ExamService {
 
   public async calculateScore(examId: string, studentId: string, answers: any[]) {
     try {
-      console.log('calculateScore', examId, studentId, answers);
       // Tìm kiếm thông tin của bài thi trong examination collection
       const examination = await ExaminationModel.findOne({
         _id: examId,
         student_id: studentId,
       });
-      console.log('examination', examination);
+
       if (!examination) {
         throw new HttpException(404, 'Examination not found');
       }

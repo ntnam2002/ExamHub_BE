@@ -9,6 +9,7 @@ export interface DataStoredInTokenAdmin {
   Role: string;
 }
 export interface RequestWithUser extends Request {
+  _id: string;
   user: any;
 }
 export interface TokenData {

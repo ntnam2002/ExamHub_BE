@@ -6,6 +6,7 @@ import { OK, Created } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 import { ExamService } from '../services/exam.service';
 import { IExamination, studentAddToExamination } from '@/interfaces/exam.interface';
+import { RequestWithUser } from '@/interfaces/auth.interface';
 
 @Service()
 export class ExamController {
@@ -220,12 +221,15 @@ export class ExamController {
   };
 
   public createExamination = async (
-    req: Request,
+    req: RequestWithUser,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const newExamination: IExamination = await this.examService.createExamination(req.body);
+      const _id = req._id;
+      const data = req.body;
+      const newExamination: IExamination = await this.examService.createExamination(_id, data);
+
       res.status(201).json({ data: newExamination });
     } catch (error) {
       next(new HttpException(400, error.message));

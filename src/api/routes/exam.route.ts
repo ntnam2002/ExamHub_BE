@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Routes } from '../../interfaces/routes.interface';
 import { ExamController } from '../controllers/exam.controller';
+import { AuthAdminMiddleware } from '@/middlewares/auth.middleware';
 
 export class ExamRoute implements Routes {
   public path = '/exams';
@@ -35,7 +36,11 @@ export class ExamRoute implements Routes {
     // Routes for managing examination data
     this.router.get(`${this.path}/examinations/getAll`, this.examController.getExaminations);
     this.router.get(`${this.path}/examinations/:id`, this.examController.getExaminationById);
-    this.router.post(`${this.path}/examinations`, this.examController.createExamination);
+    this.router.post(
+      `${this.path}/examinations`,
+      AuthAdminMiddleware,
+      this.examController.createExamination,
+    );
     this.router.put(`${this.path}/examinations/:id`, this.examController.updateExamination);
     this.router.delete(`${this.path}/examinations/:id`, this.examController.deleteExamination);
     this.router.post(
