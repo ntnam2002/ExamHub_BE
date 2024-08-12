@@ -251,12 +251,27 @@ export class ExamService {
         throw new HttpException(404, 'One or more questions not found');
       }
 
+      const findStudentInClass = await ClassModel.findById(data.class_id);
+      if (!findStudentInClass) {
+        throw new HttpException(404, 'Class not found');
+      }
+
       const totalScore = questions.reduce((sum, question) => sum + question.points, 0);
 
-      const studentId = data.student_id && data.student_id.length > 0 ? data.student_id : null;
+      // Get all students from the class
+      const classStudentIds = findStudentInClass.student_ids || [];
 
+      // Merge provided student IDs with class student IDs, ensuring no duplicates
+      const providedStudentIds = data.student_id || [];
+      console.log('providedStudentIds', providedStudentIds);
+      const mergedStudentIds = Array.from(new Set([...classStudentIds, ...providedStudentIds]));
+      console.log('mergedStudentIds', mergedStudentIds);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _id, ...newData } = { ...data, total_score: totalScore, student_id: studentId };
+      const { _id, ...newData } = {
+        ...data,
+        total_score: totalScore,
+        student_id: mergedStudentIds,
+      };
 
       const newExamination = await ExaminationModel.create(newData);
       return newExamination;
@@ -335,18 +350,25 @@ export class ExamService {
       }
 
       // Lấy danh sách câu hỏi của bài thi từ question collection
-      const questions = await QuestionModel.find({ _id: { $in: examination.question_id } });
-      if (questions.length !== examination.question_id.length) {
-        throw new HttpException(404, 'One or more questions not found');
+      const examIdformExamination = examination.exam_id;
+      const findQuestionByExamId = await ExamModel.findById(examIdformExamination);
+
+      const questions = await QuestionModel.find({
+        _id: { $in: findQuestionByExamId.questions },
+      });
+      console.log('questions', questions);
+      if (!questions) {
+        throw new HttpException(404, 'Questions not found');
       }
 
       // Tính toán điểm số
       let totalScore = 0;
 
       for (const answer of answers) {
+        console.log('answer', answer);
         const questionId = answer.questionId;
         const selectedOptionId = answer.selectedOptionId;
-
+        console.log('questionId', questionId);
         // Tìm câu hỏi trong danh sách câu hỏi của bài thi
         const question = questions.find(q => q._id.toString() === questionId);
 
@@ -358,7 +380,7 @@ export class ExamService {
         const selectedOption = question.options.find(
           option => option._id.toString() === selectedOptionId,
         );
-
+        console.log('selectedOption', selectedOption);
         if (!selectedOption) {
           throw new HttpException(
             400,
@@ -371,7 +393,7 @@ export class ExamService {
           totalScore += question.points;
         }
       }
-
+      console.log('totalScore', totalScore);
       // Lưu điểm vào cơ sở dữ liệu
       const result = await ResultModel.create({
         examination_id: examination._id,
@@ -379,12 +401,11 @@ export class ExamService {
         score: totalScore,
       });
       // Xóa studentId khỏi examination
-      examination.student_id = examination.student_id.filter(id => id !== studentId);
+      examination.student_id = examination.student_id.filter(id => id === studentId);
+      examination.save();
       return result;
     } catch (error) {
-      const statusCode = error instanceof HttpException ? error.status : 500;
-      const message = error instanceof HttpException ? error.message : 'Internal server error';
-      throw new HttpException(statusCode, message);
+      throw new HttpException(400, error.message);
     }
   }
 
