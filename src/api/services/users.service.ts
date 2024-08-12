@@ -2,8 +2,9 @@ import { compare, hash } from 'bcrypt';
 import { Service } from 'typedi';
 import { HttpException } from '@/exceptions/HttpException';
 import { IUser, User, UserRegister } from '@interfaces/users.interface';
-import { ClassModel, DepartmentModel, UserModel } from '@models/users.model';
+import { ClassModel, DepartmentModel, LoginLogsModel, UserModel } from '@models/users.model';
 import { generateTokens } from '@/auth/authUtils';
+import { now } from 'mongoose';
 
 @Service()
 export class UserService {
@@ -20,6 +21,12 @@ export class UserService {
       });
       const Username = findUser.username;
       const role = findUser.role;
+      const logs = await new LoginLogsModel({
+        user_id: findUser._id,
+        login_time: Date.now(),
+      });
+      logs.save();
+
       return { Username, role, refreshToken, accessToken };
     } catch (error) {
       throw new HttpException(400, error.message);

@@ -52,4 +52,3 @@ export const DepartmentModel = model<Department & Document>('Department', depart
 export const UserModel = model<User & Document>('User', userSchema);
 export const AdminModel = model<Admin & Document>('Admin', adminSchema);
 export const ClassModel = model<Class & Document>('Class', classSchema);
-

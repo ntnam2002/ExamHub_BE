@@ -24,6 +24,12 @@ export class ExamService {
 
   public async createQuestion(data: IQuestion) {
     try {
+      const existingQuestion = await QuestionModel.findOne({
+        text: data.text,
+      });
+      if (existingQuestion) {
+        throw new HttpException(400, 'Question already exists');
+      }
       const createQuestion = await QuestionModel.create(data);
       return createQuestion;
     } catch (error) {
@@ -97,6 +103,12 @@ export class ExamService {
 
   public async createExam(data: IExam): Promise<any> {
     try {
+      const existingExam = await ExamModel.findOne({
+        exam_name: data.exam_name,
+      });
+      if (existingExam) {
+        throw new HttpException(400, 'Exam already exists');
+      }
       if (data.questions.length === 0) {
         const getRandQuestions = await QuestionModel.aggregate([
           { $sample: { size: 5 } },
@@ -263,9 +275,9 @@ export class ExamService {
 
       // Merge provided student IDs with class student IDs, ensuring no duplicates
       const providedStudentIds = data.student_id || [];
-      console.log('providedStudentIds', providedStudentIds);
+
       const mergedStudentIds = Array.from(new Set([...classStudentIds, ...providedStudentIds]));
-      console.log('mergedStudentIds', mergedStudentIds);
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, ...newData } = {
         ...data,
@@ -356,7 +368,7 @@ export class ExamService {
       const questions = await QuestionModel.find({
         _id: { $in: findQuestionByExamId.questions },
       });
-      console.log('questions', questions);
+
       if (!questions) {
         throw new HttpException(404, 'Questions not found');
       }
@@ -365,10 +377,8 @@ export class ExamService {
       let totalScore = 0;
 
       for (const answer of answers) {
-        console.log('answer', answer);
         const questionId = answer.questionId;
         const selectedOptionId = answer.selectedOptionId;
-        console.log('questionId', questionId);
         // Tìm câu hỏi trong danh sách câu hỏi của bài thi
         const question = questions.find(q => q._id.toString() === questionId);
 
@@ -380,7 +390,6 @@ export class ExamService {
         const selectedOption = question.options.find(
           option => option._id.toString() === selectedOptionId,
         );
-        console.log('selectedOption', selectedOption);
         if (!selectedOption) {
           throw new HttpException(
             400,
@@ -393,7 +402,6 @@ export class ExamService {
           totalScore += question.points;
         }
       }
-      console.log('totalScore', totalScore);
       // Lưu điểm vào cơ sở dữ liệu
       const result = await ResultModel.create({
         examination_id: examination._id,
