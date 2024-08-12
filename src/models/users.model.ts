@@ -40,8 +40,9 @@ const loginLogsSchema = new Schema({
 
 const academicYearSchema = new Schema({
   year: { type: String, required: true },
-  start_date: { type: Date, required: true },
-  end_date: { type: Date, required: true },
+  name: { type: String, required: true },
+  start_date: { type: Date },
+  end_date: { type: Date },
   created_at: { type: Date, default: Date.now },
 });
 

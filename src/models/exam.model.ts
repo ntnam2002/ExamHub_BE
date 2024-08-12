@@ -18,6 +18,7 @@ const questionSchema = new Schema({
 });
 const subjectSchema = new Schema({
   subject_name: { type: String },
+  specializtion: { type: String },
   created_at: { type: Date, default: Date.now },
 });
 
