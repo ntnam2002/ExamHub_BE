@@ -97,8 +97,16 @@ export class ExamService {
 
   public async createExam(data: IExam): Promise<any> {
     try {
-      const createExam = await ExamModel.create(data);
-      return createExam;
+      if (data.questions.length === 0) {
+        const getRandQuestions = await QuestionModel.aggregate([
+          { $sample: { size: 5 } },
+          { $project: { _id: 1 } },
+        ]);
+        data.questions = getRandQuestions.map(question => question._id);
+        await ExamModel.create(data);
+      } else {
+        await ExamModel.create(data);
+      }
     } catch (error) {
       throw new HttpException(400, error.message);
     }

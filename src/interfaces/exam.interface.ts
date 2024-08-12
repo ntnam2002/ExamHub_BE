@@ -15,6 +15,9 @@ export interface Question {
 
 export interface IQuestion {
   text: string;
+  point: number;
+  subjectId: string;
+  difficulty: string;
   options: Option[];
 }
 
@@ -40,8 +43,6 @@ export interface IExam {
   description: string;
   questions: string[];
   created_by: string;
-  class_ids: string[];
-  scheduled_date: Date;
   duration_minutes: number;
 }
 

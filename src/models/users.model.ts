@@ -32,7 +32,24 @@ const departmentSchema = new Schema({
   teacher_ids: [{ type: String, ref: 'User' }],
   class_ids: [{ type: String, ref: 'Class' }],
 });
+
+const loginLogsSchema = new Schema({
+  user_id: { type: String, required: true },
+  login_time: { type: Date, default: Date.now },
+});
+
+const academicYearSchema = new Schema({
+  year: { type: String, required: true },
+  start_date: { type: Date, required: true },
+  end_date: { type: Date, required: true },
+  created_at: { type: Date, default: Date.now },
+});
+
+export const AcademicYearModel = model('AcademicYear', academicYearSchema);
+export const LoginLogsModel = model('LoginLogs', loginLogsSchema);
+
 export const DepartmentModel = model<Department & Document>('Department', departmentSchema);
 export const UserModel = model<User & Document>('User', userSchema);
 export const AdminModel = model<Admin & Document>('Admin', adminSchema);
 export const ClassModel = model<Class & Document>('Class', classSchema);
+
