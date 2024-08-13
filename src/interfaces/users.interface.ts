@@ -11,6 +11,7 @@ export interface User {
 export interface UserRegister {
   username: string;
   password: string;
+  name: string;
   email: string;
   role: string;
   class_ids: string;
