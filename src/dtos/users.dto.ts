@@ -3,7 +3,6 @@ import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength } from 'class-valid
 export class LoginUserDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(9)
   @MaxLength(32)
   public password: string;
 }

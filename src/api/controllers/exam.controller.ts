@@ -14,7 +14,9 @@ export class ExamController {
 
   public getAllQuestions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const questions = await this.examService.getAllQuestions();
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
+      const questions = await this.examService.getAllQuestions(page, limit);
       new OK({
         message: 'Get all questions success',
         data: questions,
@@ -26,6 +28,8 @@ export class ExamController {
 
   public createQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const question = await this.examService.createQuestion(req.body);
       new Created({
         message: 'Question created successfully',
@@ -38,6 +42,8 @@ export class ExamController {
 
   public getQuestionById = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const question = await this.examService.getQuestionById(req.params.id);
       new OK({
         message: 'Get question by ID success',
@@ -50,6 +56,8 @@ export class ExamController {
 
   public updateQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const question = await this.examService.updateQuestion(req.params.id, req.body);
       new OK({
         message: 'Question updated successfully',
@@ -62,6 +70,8 @@ export class ExamController {
 
   public deleteQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       await this.examService.deleteQuestion(req.params.id);
       new OK({
         message: 'Question deleted successfully',
@@ -73,6 +83,8 @@ export class ExamController {
 
   public getExams = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const exams = await this.examService.getExams();
       new OK({
         message: 'Get exams success',
@@ -85,6 +97,8 @@ export class ExamController {
 
   public getExamById = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const exam = await this.examService.getExamById(req.params.id);
       new OK({
         message: 'Get exam by ID success',
@@ -109,6 +123,8 @@ export class ExamController {
 
   public updateExam = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const exam = await this.examService.updateExam(req.params.id, req.body);
       new OK({
         message: 'Exam updated successfully',
@@ -163,6 +179,8 @@ export class ExamController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const examinations: IExamination[] = await this.examService.getExaminations();
       res.json({ data: examinations });
     } catch (error) {
@@ -172,6 +190,8 @@ export class ExamController {
 
   public getExaminationByStudentId = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const { studentId } = req.params;
 
       const examinations = await this.examService.getExaminationByStudentId(studentId);
@@ -183,6 +203,8 @@ export class ExamController {
 
   public addStudentToExamination = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const { examinationId } = req.params;
       const data: studentAddToExamination = req.body;
       await this.examService.addStudentToExamination(examinationId, data);
@@ -242,6 +264,8 @@ export class ExamController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const page = parseInt(String(req.query.limit)) || 1;
+      const limit = parseInt(String(req.query.limit)) || 10;
       const examinationId: string = req.params.id;
       const examination: IExamination | null = await this.examService.getExaminationById(
         examinationId,

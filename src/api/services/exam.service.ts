@@ -12,11 +12,15 @@ import { Service } from 'typedi';
 
 @Service()
 export class ExamService {
-  public async getAllQuestions() {
+  public async getAllQuestions(page, limit) {
     try {
-      const questions = await QuestionModel.find({});
+      const totalQuestions = await QuestionModel.countDocuments();
+      const totalPages = Math.ceil(totalQuestions / limit);
+      const questions = await QuestionModel.find({})
+        .skip((page - 1) * limit)
+        .limit(limit);
 
-      return questions;
+      return { questions, totalPages, page };
     } catch (error) {
       throw new HttpException(400, error.message);
     }
