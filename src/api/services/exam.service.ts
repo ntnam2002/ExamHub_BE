@@ -20,7 +20,7 @@ export class ExamService {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return { questions, totalPages, page };
+      return questions;
     } catch (error) {
       throw new HttpException(400, error.message);
     }
