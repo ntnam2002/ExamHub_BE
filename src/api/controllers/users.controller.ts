@@ -13,7 +13,7 @@ export class UserController {
       const data: IUser = req.body;
       const result = await this.user.login(data);
       new OK({
-        message: 'Login success',
+        message: 'Đăng nhập thành công',
         data: {
           username: result.Username,
           authority: result.role,

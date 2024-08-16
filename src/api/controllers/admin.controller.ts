@@ -16,7 +16,7 @@ export class AdminController {
       const login = await this.admin.loginAdmin(data);
 
       new OK({
-        message: 'Login admin success',
+        message: 'Đăng nhập thành công',
         data: {
           username: login.usernameAdmin,
           authority: login.role,
