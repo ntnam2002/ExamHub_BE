@@ -3,7 +3,7 @@ import { Container } from 'typedi';
 
 import { UserService } from '@/api/services/users.service';
 import { OK } from '@/helpers/valid_responses/success.response';
-import { IUser, User, UserRegister } from '@/interfaces/users.interface';
+import { IUser, User, UserRegister, UserUpdate } from '@/interfaces/users.interface';
 
 export class UserController {
   public user = Container.get(UserService);
@@ -96,11 +96,29 @@ export class UserController {
       next(error);
     }
   };
+  public getTeacherById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const result = await this.user.getTeacherById(userId);
+      new OK({
+        message: 'Get Teacher success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.params.id;
-      const data: User = req.body;
+      const data: UserUpdate = req.body;
+      console.log('data', data);
+      console.log('userId', userId);
       const result = await this.user.updateUser(userId, data);
       new OK({
         message: 'Update User success',

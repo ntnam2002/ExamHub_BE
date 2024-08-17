@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcrypt';
 import { Service } from 'typedi';
 import { HttpException } from '@/exceptions/HttpException';
-import { IUser, User, UserRegister } from '@interfaces/users.interface';
+import { IUser, User, UserRegister, UserUpdate } from '@interfaces/users.interface';
 import { ClassModel, DepartmentModel, LoginLogsModel, UserModel } from '@models/users.model';
 import { generateTokens } from '@/auth/authUtils';
 import { now } from 'mongoose';
@@ -36,6 +36,7 @@ export class UserService {
   public async register(data: UserRegister): Promise<any> {
     try {
       const { username, password, email, role, class_ids, department_id } = data;
+      console.log('data', data);
       const existingUser = await UserModel.findOne({ username });
       if (existingUser) {
         throw new Error('User already exists');
@@ -46,6 +47,7 @@ export class UserService {
       if (!findClass) throw new Error('Class not found');
       const findDuplicateEmail = await UserModel.findOne({ email });
       if (findDuplicateEmail) throw new Error('Email already exists');
+      console.log('password', password);
       const hashedPassword = await hash(password, 10);
       if (role !== 'student' && role !== 'teacher')
         throw new Error('Role must be student or teacher');
@@ -92,8 +94,9 @@ export class UserService {
     }
   }
 
-  public async updateUser(userId: string, data: User): Promise<any> {
+  public async updateUser(userId: string, data: UserUpdate): Promise<any> {
     try {
+      console.log('data', data);
       const findUser = await UserModel.findOneAndUpdate(
         {
           _id: userId,
@@ -103,7 +106,7 @@ export class UserService {
         },
         { new: true },
       );
-
+      console.log('findUser', findUser);
       if (!findUser) throw new Error('User not found');
       return findUser;
     } catch (error) {
@@ -116,6 +119,15 @@ export class UserService {
       const findStudent = await UserModel.findOne({ _id: userId, role: 'student' });
       if (!findStudent) throw new Error('Student not found');
       return findStudent;
+    } catch (error) {
+      throw new HttpException(400, error.message);
+    }
+  }
+  public async getTeacherById(userId: string): Promise<any> {
+    try {
+      const findTeacher = await UserModel.findOne({ _id: userId, role: 'teacher' });
+      if (!findTeacher) throw new Error('Teacher not found');
+      return findTeacher;
     } catch (error) {
       throw new HttpException(400, error.message);
     }
