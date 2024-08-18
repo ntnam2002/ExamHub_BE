@@ -7,6 +7,13 @@ export interface User {
   department_id: string;
   created_at: Date;
 }
+export interface UserUpdate {
+  username: string;
+  password: string;
+  email: string;
+  class_ids: string;
+  department_id: string;
+}
 
 export interface UserRegister {
   username: string;

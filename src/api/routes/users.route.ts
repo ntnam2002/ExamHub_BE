@@ -17,7 +17,7 @@ export class UserRoute implements Routes {
     this.router.post(`${this.path}/login`, ValidationMiddleware(LoginUserDto), this.user.login);
     this.router.post(
       `${this.path}/register`,
-      ValidationMiddleware(CreateUserDto),
+      //ValidationMiddleware(CreateUserDto),
       this.user.register,
     );
     this.router.get(`${this.path}/getAllstudents`, this.user.getAllStudent);
@@ -25,5 +25,6 @@ export class UserRoute implements Routes {
     this.router.delete(`${this.path}/deleteUser/:id`, this.user.deleteUser);
     this.router.post(`${this.path}/updateUser/:id`, this.user.updateUser);
     this.router.get(`${this.path}/getStudentById/:id`, this.user.getStudentById);
+    this.router.get(`${this.path}/getTeacherById/:id`, this.user.getTeacherById);
   }
 }

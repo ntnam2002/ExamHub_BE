@@ -15,5 +15,11 @@ export class ManagementRoute implements Routes {
   }
   private initializeRoutes() {
     this.router.post(`${this.path}/behavior`, this.management.managementStudentBehavior);
+
+    this.router.get(`${this.path}/subject`, this.management.getAllSubject);
+    this.router.get(`${this.path}/subject/:id`, this.management.getSubjectById);
+    this.router.post(`${this.path}/subject`, this.management.createSubject);
+    this.router.put(`${this.path}/subject/:id`, this.management.updateSubject);
+    this.router.delete(`${this.path}/subject/:id`, this.management.deleteSubject);
   }
 }
