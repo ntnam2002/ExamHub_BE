@@ -31,6 +31,7 @@ const examSchema = new Schema(
   {
     exam_name: { type: String },
     description: { type: String },
+    subject_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
     questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     duration_minutes: { type: Number },

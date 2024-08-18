@@ -11,6 +11,7 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   role: { type: String, enum: ['student', 'teacher'], required: true },
   class_ids: [{ type: String, ref: 'Class' }],
+  academicYearSchema: { type: String, ref: 'AcademicYear' },
   department_id: { type: String, ref: 'Department' },
   created_at: { type: Date, default: Date.now },
 });
