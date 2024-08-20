@@ -28,8 +28,6 @@ export class ExamController {
 
   public createQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const page = parseInt(String(req.query.limit)) || 1;
-      const limit = parseInt(String(req.query.limit)) || 10;
       const question = await this.examService.createQuestion(req.body);
       new Created({
         message: 'Question created successfully',

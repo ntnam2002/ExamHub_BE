@@ -12,8 +12,8 @@ const questionSchema = new Schema({
   text: { type: String },
   points: { type: Number, default: 1 },
   options: { type: [optionSchema] },
-  subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
-  difficuty: { type: mongoose.Schema.Types.ObjectId, ref: 'Difficulty' },
+  subject_name: { type: String },
+  difficulty: { type: String },
   created_at: { type: Date, default: Date.now },
 });
 const subjectSchema = new Schema({
@@ -21,8 +21,11 @@ const subjectSchema = new Schema({
   specializtion: { type: String },
   created_at: { type: Date, default: Date.now },
 });
-
+const specializationSchema = new Schema({
+  specialization_name: { type: String },
+});
 const difficultySchema = new Schema({
+  id: { type: Number },
   level: { type: String },
   description: { type: String },
 });
@@ -84,6 +87,7 @@ export const ExaminationModel = model<Examination & Document>('Examination', exa
 export const ResultModel = model<Result & Document>('Result', resultSchema);
 export const QuestionModel = model<Question & Document>('Question', questionSchema);
 export const ExamModel = model<Exam & Document>('Exam', examSchema);
+export const SpecializtionModel = model('Specializtion', specializationSchema);
 
 export const TeacherStatisticsModel = model('TeacherStatistics', teacherStatisticsSchema);
 export const StudentStatisticsModel = model('StudentStatistics', studentStatisticsSchema);

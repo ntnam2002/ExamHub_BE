@@ -71,9 +71,9 @@ export class AdminController {
 
   public addClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { className } = req.body;
+      const { className, specialization_id } = req.body;
 
-      const addClass = await this.admin.addClass(className);
+      const addClass = await this.admin.addClass(className, specialization_id);
       new OK({
         message: 'Add class success',
         data: addClass,

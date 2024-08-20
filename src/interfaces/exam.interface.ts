@@ -15,9 +15,11 @@ export interface Question {
 
 export interface IQuestion {
   text: string;
+  subject_id: string;
+  difficulty: number;
   point: number;
   subjectId: string;
-  difficulty: string;
+
   options: Option[];
 }
 

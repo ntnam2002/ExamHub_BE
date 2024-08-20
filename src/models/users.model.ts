@@ -10,8 +10,8 @@ const userSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   role: { type: String, enum: ['student', 'teacher'], required: true },
-  class_ids: [{ type: String, ref: 'Class' }],
-  department_id: { type: String, ref: 'Department' },
+  class_names: [{ type: String }],
+  department_name: { type: String },
   created_at: { type: Date, default: Date.now },
 });
 const adminSchema = new Schema({
@@ -24,6 +24,7 @@ const classSchema = new Schema({
   class_name: { type: String, required: true },
   teacherId: { type: String },
   student_ids: [{ type: String, ref: 'User' }],
+  specialization: { type: String },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

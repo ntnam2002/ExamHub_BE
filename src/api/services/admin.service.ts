@@ -8,6 +8,7 @@ import { IClass, IDepartment } from '@/interfaces/admin.interface';
 import { redis } from '@/database/redis.database';
 
 import { saveRefreshTokenToRedis } from '@/utils/TokenRedis';
+import { SpecializtionModel } from '@/models/exam.model';
 
 @Service()
 export class AdminService {
@@ -119,12 +120,16 @@ export class AdminService {
     }
   }
 
-  public async addClass(className: string) {
+  public async addClass(className: string, specialization_id: string) {
     try {
+      const findSpecialization = await SpecializtionModel.findOne({ _id: specialization_id });
+      if (!findSpecialization) throw new Error('Specialization not found');
+      const specialization = findSpecialization.specialization_name;
       const findClass = await ClassModel.findOne({ className });
       if (findClass) throw new Error('Class already exists');
       const newClass = new ClassModel({
         class_name: className,
+        specialization: specialization,
       });
       await newClass.save();
     } catch (error) {
