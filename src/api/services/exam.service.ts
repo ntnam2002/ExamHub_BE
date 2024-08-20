@@ -5,7 +5,14 @@ import {
   IQuestion,
   studentAddToExamination,
 } from '@/interfaces/exam.interface';
-import { ExaminationModel, ExamModel, QuestionModel, ResultModel } from '@/models/exam.model';
+import {
+  DifficultyModel,
+  ExaminationModel,
+  ExamModel,
+  QuestionModel,
+  ResultModel,
+  SubjectModel,
+} from '@/models/exam.model';
 import { ClassModel } from '@/models/users.model';
 
 import { Service } from 'typedi';
@@ -14,11 +21,9 @@ import { Service } from 'typedi';
 export class ExamService {
   public async getAllQuestions(page, limit) {
     try {
-      const totalQuestions = await QuestionModel.countDocuments();
-      const totalPages = Math.ceil(totalQuestions / limit);
-      const questions = await QuestionModel.find({})
-        .skip((page - 1) * limit)
-        .limit(limit);
+      // const totalQuestions = await QuestionModel.countDocuments();
+      // const totalPages = Math.ceil(totalQuestions / limit);
+      const questions = await QuestionModel.find({});
 
       return questions;
     } catch (error) {
@@ -34,7 +39,20 @@ export class ExamService {
       if (existingQuestion) {
         throw new HttpException(400, 'Question already exists');
       }
-      const createQuestion = await QuestionModel.create(data);
+      const findDifficulty = await DifficultyModel.findOne({ id: data.difficulty });
+      if (!findDifficulty) {
+        throw new HttpException(400, 'Difficulty level not found');
+      }
+      const difficultyLevel = findDifficulty.level;
+      const findSubject = await SubjectModel.findOne({ _id: data.subject_id });
+      const subjectname = findSubject.subject_name;
+      const newData = {
+        ...data,
+        subject_name: subjectname,
+        difficulty: difficultyLevel,
+      };
+      console.log(newData);
+      const createQuestion = await QuestionModel.create(newData);
       return createQuestion;
     } catch (error) {
       throw new HttpException(400, error.message);

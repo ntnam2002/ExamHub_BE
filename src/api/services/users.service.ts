@@ -36,24 +36,34 @@ export class UserService {
   public async register(data: UserRegister): Promise<any> {
     try {
       const { username, password, email, role, class_ids, department_id } = data;
-      console.log('data', data);
+
+      if (role !== 'student' && role !== 'teacher')
+        throw new Error('Role must be student or teacher');
+
       const existingUser = await UserModel.findOne({ username });
       if (existingUser) {
         throw new Error('User already exists');
       }
+
       const findDepartment = await DepartmentModel.findOne({ _id: department_id });
       if (!findDepartment) throw new Error('Department not found');
+      const department_name = findDepartment.department_name;
+
       const findClass = await ClassModel.findOne({ _id: class_ids });
       if (!findClass) throw new Error('Class not found');
+      const class_name = findClass.class_name;
+
       const findDuplicateEmail = await UserModel.findOne({ email });
       if (findDuplicateEmail) throw new Error('Email already exists');
-      console.log('password', password);
+
       const hashedPassword = await hash(password, 10);
-      if (role !== 'student' && role !== 'teacher')
-        throw new Error('Role must be student or teacher');
+      data.password = hashedPassword;
+
       data.password = hashedPassword;
       const newUser = new UserModel({
         ...data,
+        department_name: department_name,
+        class_names: class_name,
       });
       newUser.save();
       const { refreshToken, accessToken } = await generateTokens({
