@@ -4,6 +4,7 @@ import { OK, Created } from '@/helpers/valid_responses/success.response';
 import { Container } from 'typedi';
 
 import { ManagementService } from '../services/management.service';
+import { UserModel } from '@/models/users.model';
 
 export class ManagemnentController {
   public management = Container.get(ManagementService);
@@ -19,6 +20,17 @@ export class ManagemnentController {
       res.status(200).json({ data: managementData, message: 'save manageStudentBehavior' });
     } catch (error) {
       next(error);
+    }
+  };
+  public getAllBehaviorHistories = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.management.getAllBehaviorHistories();
+      new OK({
+        message: 'Get behavior history success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      throw new HttpException(500, 'Internal server error');
     }
   };
   public getAllSubject = async (req: Request, res: Response, next: NextFunction) => {
@@ -87,6 +99,43 @@ export class ManagemnentController {
       new OK({
         message: 'Get academic year success',
         data: result,
+      }).send(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAllLoginLogs = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Fetch all login histories
+      const loginHistories = await this.management.getAllLoginHistories();
+
+      // Extract user IDs from login histories
+      const userIds = loginHistories.map((log: any) => log.user_id);
+
+      // Fetch user details based on user IDs
+      const users = await UserModel.find({ _id: { $in: userIds } }, 'username name');
+
+      // Create a map of user details
+      const userMap = new Map(users.map((user: any) => [user._id.toString(), user]));
+
+      // Combine user details with login histories
+      const result = loginHistories.map((log: any) => ({
+        ...log,
+        user: userMap.get(log.user_id.toString()), // Use log.user_id instead of log.userId
+      }));
+
+      // Map the combined data to include only username, name, and login_time
+      const filteredResult = result.map((log: any) => ({
+        username: log.user.username,
+        name: log.user.name,
+        login_time: log._doc.login_time,
+      }));
+
+      // Send the response
+      new OK({
+        message: 'Get login logs success',
+        data: filteredResult,
       }).send(res);
     } catch (error) {
       next(error);

@@ -12,9 +12,6 @@ const userSchema = new Schema({
   role: { type: String, enum: ['student', 'teacher'], required: true },
   class_names: [{ type: String }],
   department_name: { type: String },
-  class_ids: [{ type: String, ref: 'Class' }],
-  academicYearSchema: { type: String, ref: 'AcademicYear' },
-  department_id: { type: String, ref: 'Department' },
   created_at: { type: Date, default: Date.now },
 });
 const adminSchema = new Schema({

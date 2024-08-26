@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { UserController } from '@/api/controllers/users.controller';
-import { CreateUserDto, LoginUserDto } from '@dtos/users.dto';
 import { Routes } from '@interfaces/routes.interface';
-import { ValidationMiddleware } from '@middlewares/validation.middleware';
 import { ManagemnentController } from '../controllers/management.controller';
 
 export class ManagementRoute implements Routes {
@@ -15,6 +12,9 @@ export class ManagementRoute implements Routes {
   }
   private initializeRoutes() {
     this.router.post(`${this.path}/behavior`, this.management.managementStudentBehavior);
+    this.router.get(`${this.path}/getAllBehavior`, this.management.getAllBehaviorHistories);
+
+    this.router.get(`${this.path}/getAllLoginLogs`, this.management.getAllLoginLogs);
 
     this.router.get(`${this.path}/subject`, this.management.getAllSubject);
     this.router.get(`${this.path}/subject/:id`, this.management.getSubjectById);
