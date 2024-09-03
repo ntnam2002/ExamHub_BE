@@ -13,6 +13,7 @@ export class ManagementRoute implements Routes {
   private initializeRoutes() {
     this.router.post(`${this.path}/behavior`, this.management.managementStudentBehavior);
     this.router.get(`${this.path}/getAllBehavior`, this.management.getAllBehaviorHistories);
+    this.router.get(`${this.path}/searchBehavior`, this.management.searchBehaviorHistories);
 
     this.router.get(`${this.path}/getAllLoginLogs`, this.management.getAllLoginLogs);
 

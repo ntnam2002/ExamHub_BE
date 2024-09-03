@@ -17,7 +17,10 @@ export class ManagemnentController {
         studentId,
         behavior,
       );
-      res.status(200).json({ data: managementData, message: 'save manageStudentBehavior' });
+      new Created({
+        message: 'Manage student behavior success',
+        data: managementData,
+      }).send(res);
     } catch (error) {
       next(error);
     }
@@ -33,6 +36,32 @@ export class ManagemnentController {
       throw new HttpException(500, 'Internal server error');
     }
   };
+
+  public searchBehaviorHistories = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { search } = req.query;
+
+      // Check if query is provided
+      if (!search || typeof search !== 'string') {
+        return res.status(400).json({
+          message: 'Query parameter is required and must be a string',
+        });
+      }
+
+      // Search behavior histories
+      const result = await this.management.findStudentBehavior(search);
+
+      // Respond with the search results
+      new OK({
+        message: 'Search behavior history success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      // Pass error to next middleware
+      next(new HttpException(500, error.message || 'Internal server error'));
+    }
+  };
+
   public getAllSubject = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.management.getAllSubjects();

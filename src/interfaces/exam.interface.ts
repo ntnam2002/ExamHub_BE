@@ -73,3 +73,17 @@ export interface studentAddToExamination {
   student_ids: string[];
   class_ids: string[];
 }
+
+export interface BehaviorRes {
+  examination_name: string;
+  student_name: string;
+  behavior: string;
+  date: Date;
+}
+
+export interface StudentBehavior {
+  examination_name: string;
+  student_name: string;
+  behavior: string;
+  date: Date;
+}

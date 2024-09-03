@@ -20,6 +20,8 @@ export class UserRoute implements Routes {
       //ValidationMiddleware(CreateUserDto),
       this.user.register,
     );
+
+
     this.router.get(`${this.path}/getAllstudents`, this.user.getAllStudent);
     this.router.get(`${this.path}/getAllTeachers`, this.user.getAllTeacher);
     this.router.delete(`${this.path}/deleteUser/:id`, this.user.deleteUser);
