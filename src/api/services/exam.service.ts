@@ -51,7 +51,6 @@ export class ExamService {
         subject_name: subjectname,
         difficulty: difficultyLevel,
       };
-      console.log(newData);
       const createQuestion = await QuestionModel.create(newData);
       return createQuestion;
     } catch (error) {
@@ -105,7 +104,7 @@ export class ExamService {
 
   public async getExamById(_id: string): Promise<any> {
     try {
-      const exam = await ExamModel.findById(_id).populate('questions');
+      const exam = await ExamModel.findOne({ _id }).populate('questions');
       if (!exam) throw new HttpException(404, 'Exam not found');
       return exam;
     } catch (error) {
@@ -274,22 +273,25 @@ export class ExamService {
 
   public async createExamination(_idUser: string, data: IExamination) {
     try {
+      // Find the exam by exam_id
       const findExam = await ExamModel.findById(data.exam_id);
       if (!findExam) {
         throw new HttpException(404, 'Exam not found');
       }
 
+      // Find the questions associated with the exam
       const questions = await QuestionModel.find({ _id: { $in: findExam.questions } });
-
-      if (!questions) {
+      if (!questions || questions.length === 0) {
         throw new HttpException(404, 'One or more questions not found');
       }
 
+      // Find the class by class_id
       const findStudentInClass = await ClassModel.findById(data.class_id);
       if (!findStudentInClass) {
         throw new HttpException(404, 'Class not found');
       }
 
+      // Calculate the total score of the exam
       const totalScore = questions.reduce((sum, question) => sum + question.points, 0);
 
       // Get all students from the class
@@ -297,16 +299,16 @@ export class ExamService {
 
       // Merge provided student IDs with class student IDs, ensuring no duplicates
       const providedStudentIds = data.student_id || [];
-
       const mergedStudentIds = Array.from(new Set([...classStudentIds, ...providedStudentIds]));
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _id, ...newData } = {
+      // Prepare the new examination data
+      const newData = {
         ...data,
         total_score: totalScore,
         student_id: mergedStudentIds,
       };
 
+      // Create the new examination
       const newExamination = await ExaminationModel.create(newData);
       return newExamination;
     } catch (error) {

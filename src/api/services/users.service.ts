@@ -106,7 +106,6 @@ export class UserService {
 
   public async updateUser(userId: string, data: UserUpdate): Promise<any> {
     try {
-      console.log('data', data);
       const findUser = await UserModel.findOneAndUpdate(
         {
           _id: userId,
@@ -116,7 +115,6 @@ export class UserService {
         },
         { new: true },
       );
-      console.log('findUser', findUser);
       if (!findUser) throw new Error('User not found');
       return findUser;
     } catch (error) {

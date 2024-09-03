@@ -117,8 +117,6 @@ export class UserController {
     try {
       const userId = req.params.id;
       const data: UserUpdate = req.body;
-      console.log('data', data);
-      console.log('userId', userId);
       const result = await this.user.updateUser(userId, data);
       new OK({
         message: 'Update User success',

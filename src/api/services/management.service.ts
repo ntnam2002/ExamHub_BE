@@ -60,7 +60,6 @@ export class ManagementService {
   public async getAllBehaviorHistories(): Promise<BehaviorRes[]> {
     try {
       const result = await BehaviorModel.find().sort({ date: -1 });
-      console.log(result);
 
       const behaviorHistories = result.map(item => ({
         student_name: item.student_name,
@@ -86,7 +85,6 @@ export class ManagementService {
       }
       const examination_name = exam.exam_name;
       const student = await UserModel.findById(studentId);
-      console.log(student);
       if (!student) {
         throw new HttpException(404, 'Student not found');
       }
