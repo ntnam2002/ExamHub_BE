@@ -136,8 +136,12 @@ export class ManagemnentController {
 
   public getAllLoginLogs = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Fetch all login histories
-      const loginHistories = await this.management.getAllLoginHistories();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      // Fetch paginated login histories
+      const { loginHistories, totalPages, currentPage, totalItems } =
+        await this.management.getAllLoginHistories(page, limit);
 
       // Extract user IDs from login histories
       const userIds = loginHistories.map((log: any) => log.user_id);
@@ -151,7 +155,7 @@ export class ManagemnentController {
       // Combine user details with login histories
       const result = loginHistories.map((log: any) => ({
         ...log,
-        user: userMap.get(log.user_id.toString()), // Use log.user_id instead of log.userId
+        user: userMap.get(log.user_id.toString()),
       }));
 
       // Map the combined data to include only username, name, and login_time
@@ -164,10 +168,53 @@ export class ManagemnentController {
       // Send the response
       new OK({
         message: 'Get login logs success',
-        data: filteredResult,
+        data: {
+          filteredResult,
+          currentPage,
+          totalPages,
+          totalItems,
+          limit,
+        },
       }).send(res);
     } catch (error) {
       next(error);
+    }
+  };
+
+  public systemStatistics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.management.systemStatistics();
+      new OK({
+        message: 'Get system statistics success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public searchSystemStatistics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const search = req.query.search;
+      console.log(search);
+      // Check if query is provided
+      if (!search || typeof search !== 'string') {
+        return res.status(400).json({
+          message: 'Query parameter is required and must be a string',
+        });
+      }
+
+      // Search behavior histories
+      const result = await this.management.searchSystemStatistics(search);
+      console.log(result);
+      // Respond with the search results
+      new OK({
+        message: 'Search system statistics success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      // Pass error to next middleware
+      next(new HttpException(500, error.message || 'Internal server error'));
     }
   };
 }

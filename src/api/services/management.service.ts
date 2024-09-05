@@ -1,6 +1,6 @@
 import { HttpException } from '@/exceptions/HttpException';
 import { BehaviorRes } from '@/interfaces/exam.interface';
-import { ExaminationModel, ExamModel, SubjectModel } from '@/models/exam.model';
+import { ExaminationModel, ExamModel, ResultModel, SubjectModel } from '@/models/exam.model';
 import { BehaviorModel } from '@/models/studentBehavior.model';
 import { AcademicYearModel, LoginLogsModel, UserModel } from '@/models/users.model';
 import e from 'express';
@@ -158,11 +158,108 @@ export class ManagementService {
     }
   }
 
-  public async getAllLoginHistories() {
+  public async getAllLoginHistories(page = 1, limit = 10) {
     try {
-      const loginHistories = await LoginLogsModel.find().sort({ date: -1 });
-      return loginHistories;
+      const skip = (page - 1) * limit;
+      const loginHistories = await LoginLogsModel.find()
+        .sort({ login_time: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const total = await LoginLogsModel.countDocuments();
+
+      return {
+        loginHistories,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        totalItems: total,
+      };
     } catch (error) {
+      throw new HttpException(500, 'Internal server error');
+    }
+  }
+
+  public async systemStatistics() {
+    try {
+      const totalUsers = await UserModel.countDocuments();
+      const totalStudents = await UserModel.countDocuments({ role: 'student' });
+      const totalTeachers = await UserModel.countDocuments({ role: 'teacher' });
+      const averageScore = await ResultModel.aggregate([
+        {
+          $group: {
+            _id: null,
+            averageScore: { $avg: '$score' },
+          },
+        },
+      ]);
+
+      // Extract the average score from the result
+      const avgScore = averageScore.length > 0 ? averageScore[0].averageScore : null;
+      return {
+        totalUsers,
+        totalStudents,
+        totalTeachers,
+        avgScore,
+      };
+    } catch (error) {
+      throw new HttpException(500, 'Internal server error');
+    }
+  }
+
+  public async searchSystemStatistics(search: string) {
+    try {
+      const numericSearch = parseInt(search);
+      const isNumeric = !isNaN(numericSearch);
+
+      // Parse the search string as an ISO date
+      const dateSearch = new Date(search);
+      const isValidDate = !isNaN(dateSearch.getTime());
+
+      const matchConditions: any[] = [
+        { user_name: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
+      ];
+
+      if (isValidDate) {
+        matchConditions.push({
+          date: {
+            $gte: dateSearch,
+            $lt: new Date(dateSearch.getTime() + 24 * 60 * 60 * 1000), // Next day
+          },
+        });
+      }
+
+      if (isNumeric) {
+        matchConditions.push({
+          $or: [
+            { $expr: { $eq: [{ $year: '$date' }, numericSearch] } },
+            { $expr: { $eq: [{ $month: '$date' }, numericSearch] } },
+            { $expr: { $eq: [{ $dayOfMonth: '$date' }, numericSearch] } },
+          ],
+        });
+      }
+
+      matchConditions.push({
+        date: {
+          $regex: search,
+          $options: 'i',
+        },
+      });
+
+      const result = await LoginLogsModel.aggregate([
+        {
+          $match: {
+            $or: matchConditions,
+          },
+        },
+        {
+          $sort: { date: -1 }, // Sort by date in descending order
+        },
+      ]);
+
+      return result;
+    } catch (error) {
+      console.error('Error in searchSystemStatistics:', error);
       throw new HttpException(500, 'Internal server error');
     }
   }

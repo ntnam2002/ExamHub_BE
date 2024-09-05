@@ -403,11 +403,17 @@ export class ExamService {
       for (const answer of answers) {
         const questionId = answer.questionId;
         const selectedOptionId = answer.selectedOptionId;
+
         // Tìm câu hỏi trong danh sách câu hỏi của bài thi
         const question = questions.find(q => q._id.toString() === questionId);
 
         if (!question) {
           throw new HttpException(404, `Question with ID ${questionId} not found in examination`);
+        }
+
+        // Nếu không có selectedOptionId, bỏ qua câu hỏi này
+        if (!selectedOptionId) {
+          continue;
         }
 
         // Tìm đáp án được chọn
@@ -426,21 +432,23 @@ export class ExamService {
           totalScore += question.points;
         }
       }
+
       // Lưu điểm vào cơ sở dữ liệu
       const result = await ResultModel.create({
         examination_id: examination._id,
         student_id: studentId,
         score: totalScore,
       });
+
       // Xóa studentId khỏi examination
-      examination.student_id = examination.student_id.filter(id => id === studentId);
-      examination.save();
+      examination.student_id = examination.student_id.filter(id => id !== studentId);
+      await examination.save();
+
       return result;
     } catch (error) {
       throw new HttpException(400, error.message);
     }
   }
-
   public async getScore(studentId: string, examinationId: string) {
     try {
       const results = await ResultModel.find({
