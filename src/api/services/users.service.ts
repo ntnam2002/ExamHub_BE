@@ -5,6 +5,7 @@ import { IUser, User, UserRegister, UserUpdate } from '@interfaces/users.interfa
 import { ClassModel, DepartmentModel, LoginLogsModel, UserModel } from '@models/users.model';
 import { generateTokens } from '@/auth/authUtils';
 import { now } from 'mongoose';
+import { add } from 'winston';
 
 @Service()
 export class UserService {
@@ -51,6 +52,7 @@ export class UserService {
 
       const findClass = await ClassModel.findOne({ _id: class_ids });
       if (!findClass) throw new Error('Class not found');
+
       const class_name = findClass.class_name;
 
       const findDuplicateEmail = await UserModel.findOne({ email });
@@ -60,6 +62,7 @@ export class UserService {
       data.password = hashedPassword;
 
       data.password = hashedPassword;
+
       const newUser = new UserModel({
         ...data,
         department_name: department_name,
@@ -70,6 +73,22 @@ export class UserService {
         _userId: newUser._id,
         _role: newUser.role,
       });
+      if (role === 'student') {
+        try {
+          const addStudentToClass = await ClassModel.findOneAndUpdate(
+            { _id: class_ids }, // Ensure class_ids is an array
+            { $push: { student_ids: newUser._id } },
+            { new: true }, // Return the updated document
+          );
+
+          if (!addStudentToClass) {
+            throw new Error('Class not found or update failed');
+          }
+        } catch (error) {
+          console.error('Error adding student to class:', error);
+          throw new Error('Failed to add student to class');
+        }
+      }
       return { refreshToken, accessToken };
     } catch (error) {
       throw new HttpException(400, error.message);

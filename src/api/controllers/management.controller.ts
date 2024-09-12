@@ -160,11 +160,11 @@ export class ManagemnentController {
 
       // Map the combined data to include only username, name, and login_time
       const filteredResult = result.map((log: any) => ({
-        username: log.user.username,
-        name: log.user.name,
-        login_time: log._doc.login_time,
+        username: log.user?.username,
+        name: log.user?.name,
+        login_time: log._doc?.login_time,
       }));
-
+      console.log(filteredResult);
       // Send the response
       new OK({
         message: 'Get login logs success',

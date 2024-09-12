@@ -120,16 +120,12 @@ export class AdminService {
     }
   }
 
-  public async addClass(className: string, specialization_id: string) {
+  public async addClass(className: string) {
     try {
-      const findSpecialization = await SpecializtionModel.findOne({ _id: specialization_id });
-      if (!findSpecialization) throw new Error('Specialization not found');
-      const specialization = findSpecialization.specialization_name;
       const findClass = await ClassModel.findOne({ className });
       if (findClass) throw new Error('Class already exists');
       const newClass = new ClassModel({
         class_name: className,
-        specialization: specialization,
       });
       await newClass.save();
     } catch (error) {
