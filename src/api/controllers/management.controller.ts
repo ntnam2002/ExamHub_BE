@@ -220,8 +220,13 @@ export class ManagemnentController {
 
   public getResultByStudentId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { studentId } = req.params;
-      const result = await this.management.getResultByStudentId(studentId);
+      const id = req.params.id;
+      const { examination_name, score, submitted_at } = req.query;
+      const result = await this.management.getResultByStudentId(id, {
+        examination_name: examination_name as string,
+        score: score ? Number(score) : undefined,
+        submitted_at: submitted_at as string,
+      });
       new OK({
         message: 'Get result success',
         data: result,

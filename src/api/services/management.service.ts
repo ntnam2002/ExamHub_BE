@@ -284,9 +284,33 @@ export class ManagementService {
     }
   }
 
-  public async getResultByStudentId(studentId: string) {
+  public async getResultByStudentId(
+    studentId: string,
+    filters: {
+      examination_name?: string;
+      score?: number;
+      submitted_at?: string;
+    },
+  ) {
     try {
-      const results = await ResultModel.find({ student_id: studentId }).sort({ createdAt: -1 });
+      const query: any = { student_id: studentId };
+
+      if (filters.examination_name) {
+        query.examination_name = { $regex: filters.examination_name, $options: 'i' };
+      }
+      if (filters.score !== undefined) {
+        query.score = filters.score;
+      }
+      if (filters.submitted_at) {
+        // Assuming submitted_at is stored as ISO string in database
+        const startOfDay = new Date(filters.submitted_at);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(filters.submitted_at);
+        endOfDay.setHours(23, 59, 59, 999);
+        query.submitted_at = { $gte: startOfDay, $lte: endOfDay };
+      }
+
+      const results = await ResultModel.find(query).sort({ createdAt: -1 });
       return results;
     } catch (error) {
       throw new HttpException(500, 'Internal server error');

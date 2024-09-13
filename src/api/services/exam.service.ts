@@ -431,15 +431,16 @@ export class ExamService {
           totalScore += question.points;
         }
       }
+      console.log(findQuestionByExamId.exam_name);
       // Lưu điểm vào cơ sở dữ liệu
       const result = await ResultModel.create({
-        examination_id: findQuestionByExamId.exam_name,
+        examination_name: findQuestionByExamId.exam_name,
         student_id: studentId,
         score: totalScore,
       });
-
+      console.log(result);
       // Xóa studentId khỏi examination
-      examination.student_id = examination.student_id.filter(id => id !== studentId);
+      examination.student_id = examination.student_id.filter(id => id === studentId);
       await examination.save();
 
       return result;

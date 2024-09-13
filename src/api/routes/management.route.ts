@@ -25,6 +25,7 @@ export class ManagementRoute implements Routes {
 
     this.router.get(`${this.path}/statistic`, this.management.systemStatistics);
     this.router.get(`${this.path}/searchStatistic`, this.management.searchSystemStatistics);
-    this.router.get(`${this.path}/getResultForStudent`, this.management.getResultByStudentId);
+
+    this.router.get(`${this.path}/getResult/:id`, this.management.getResultByStudentId);
   }
 }

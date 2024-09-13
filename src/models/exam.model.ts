@@ -60,7 +60,7 @@ const examinationSchema = new Schema(
 // Result Schema
 const resultSchema = new Schema(
   {
-    examination_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Examination' },
+    examination_name: { type: String },
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     score: { type: Number },
     submitted_at: { type: Date, default: Date.now },
