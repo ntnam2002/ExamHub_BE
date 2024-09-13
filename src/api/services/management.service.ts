@@ -192,6 +192,25 @@ export class ManagementService {
           },
         },
       ]);
+      //Get number of login by days
+      const loginLogs = await LoginLogsModel.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$login_time' } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: '$_id',
+            count: 1,
+          },
+        },
+      ]);
 
       // Extract the average score from the result
       const avgScore = averageScore.length > 0 ? averageScore[0].averageScore : null;
@@ -200,6 +219,7 @@ export class ManagementService {
         totalStudents,
         totalTeachers,
         avgScore,
+        loginLogs,
       };
     } catch (error) {
       throw new HttpException(500, 'Internal server error');
@@ -260,6 +280,15 @@ export class ManagementService {
       return result;
     } catch (error) {
       console.error('Error in searchSystemStatistics:', error);
+      throw new HttpException(500, 'Internal server error');
+    }
+  }
+
+  public async getResultByStudentId(studentId: string) {
+    try {
+      const results = await ResultModel.find({ student_id: studentId }).sort({ createdAt: -1 });
+      return results;
+    } catch (error) {
       throw new HttpException(500, 'Internal server error');
     }
   }

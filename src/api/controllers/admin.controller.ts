@@ -5,6 +5,7 @@ import { AdminService } from '../services/admin.service';
 import { OK } from '../../helpers/valid_responses/success.response';
 import { HttpException } from '@/helpers/exceptions/httpException';
 import { IClass, IDepartment } from '@/interfaces/admin.interface';
+import { SpecializtionModel } from '../../models/exam.model';
 
 export class AdminController {
   public admin = Container.get(AdminService);
@@ -71,9 +72,9 @@ export class AdminController {
 
   public addClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { className } = req.body;
+      const { class_name, specialization } = req.body;
 
-      const addClass = await this.admin.addClass(className);
+      const addClass = await this.admin.addClass(class_name, specialization);
       new OK({
         message: 'Add class success',
         data: addClass,
@@ -86,7 +87,7 @@ export class AdminController {
   public deleteClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params;
-
+      console.log(classId);
       const deleteClass = await this.admin.deleteClass(classId);
       new OK({
         message: 'Delete class success',
@@ -151,8 +152,8 @@ export class AdminController {
 
   public addDepartment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { department_name } = req.body;
-      const addDepartment = await this.admin.addDepartment(department_name);
+      const { department_name, name } = req.body;
+      const addDepartment = await this.admin.addDepartment(department_name, name);
       new OK({
         message: 'Add department success',
         data: addDepartment,

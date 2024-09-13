@@ -388,7 +388,6 @@ export class ExamService {
       // Lấy danh sách câu hỏi của bài thi từ question collection
       const examIdformExamination = examination.exam_id;
       const findQuestionByExamId = await ExamModel.findById(examIdformExamination);
-
       const questions = await QuestionModel.find({
         _id: { $in: findQuestionByExamId.questions },
       });
@@ -432,10 +431,9 @@ export class ExamService {
           totalScore += question.points;
         }
       }
-
       // Lưu điểm vào cơ sở dữ liệu
       const result = await ResultModel.create({
-        examination_id: examination._id,
+        examination_id: findQuestionByExamId.exam_name,
         student_id: studentId,
         score: totalScore,
       });

@@ -120,12 +120,14 @@ export class AdminService {
     }
   }
 
-  public async addClass(className: string) {
+  public async addClass(className: string, specialization: string) {
     try {
-      const findClass = await ClassModel.findOne({ className });
+      console.log(className);
+      const findClass = await ClassModel.findOne({ class_name: className });
       if (findClass) throw new Error('Class already exists');
       const newClass = new ClassModel({
         class_name: className,
+        specialization,
       });
       await newClass.save();
     } catch (error) {
@@ -135,7 +137,7 @@ export class AdminService {
 
   public async deleteClass(classId: string) {
     try {
-      const findClass = await ClassModel.findOneAndDelete({ classId });
+      const findClass = await ClassModel.findOneAndDelete({ _id: classId });
       if (!findClass) throw new Error('Class not found');
       return findClass;
     } catch (error) {
@@ -207,12 +209,13 @@ export class AdminService {
     }
   }
 
-  public async addDepartment(department_name: string) {
+  public async addDepartment(department_name: string, name: string) {
     try {
       const findDepartment = await DepartmentModel.findOne({ department_name });
       if (findDepartment) throw new Error('Department already exists');
       const newDepartment = new DepartmentModel({
         department_name,
+        name,
       });
       await newDepartment.save();
     } catch (error) {

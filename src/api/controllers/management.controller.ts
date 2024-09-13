@@ -217,4 +217,17 @@ export class ManagemnentController {
       next(new HttpException(500, error.message || 'Internal server error'));
     }
   };
+
+  public getResultByStudentId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { studentId } = req.params;
+      const result = await this.management.getResultByStudentId(studentId);
+      new OK({
+        message: 'Get result success',
+        data: result,
+      }).send(res);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

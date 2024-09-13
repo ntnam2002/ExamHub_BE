@@ -33,6 +33,7 @@ const departmentSchema = new Schema({
   department_name: { type: String, required: true },
   teacher_ids: [{ type: String, ref: 'User' }],
   class_ids: [{ type: String, ref: 'Class' }],
+  name: { type: String },
 });
 
 const loginLogsSchema = new Schema({

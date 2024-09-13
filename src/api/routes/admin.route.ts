@@ -30,7 +30,7 @@ export class AdminRoute implements Routes {
     this.router.post(`${this.path}searchClass`, this.admin.searchClass);
 
     this.router.get(`${this.path}getAllDepartment`, this.admin.getAllDepartment);
-    this.router.get(`${this.path}addDepartment`, this.admin.addDepartment);
+    this.router.post(`${this.path}addDepartment`, this.admin.addDepartment);
     this.router.delete(`${this.path}deleteDepartment/:departmentId`, this.admin.deleteDepartment);
     this.router.post(`${this.path}updateDepartment/:departmentId`, this.admin.updateDepartment);
   }
