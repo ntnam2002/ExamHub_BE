@@ -87,7 +87,6 @@ export class AdminController {
   public deleteClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params;
-      console.log(classId);
       const deleteClass = await this.admin.deleteClass(classId);
       new OK({
         message: 'Delete class success',

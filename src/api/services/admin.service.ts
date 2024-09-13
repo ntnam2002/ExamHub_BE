@@ -122,7 +122,6 @@ export class AdminService {
 
   public async addClass(className: string, specialization: string) {
     try {
-      console.log(className);
       const findClass = await ClassModel.findOne({ class_name: className });
       if (findClass) throw new Error('Class already exists');
       const newClass = new ClassModel({

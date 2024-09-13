@@ -164,7 +164,6 @@ export class ManagemnentController {
         name: log.user?.name,
         login_time: log._doc?.login_time,
       }));
-      console.log(filteredResult);
       // Send the response
       new OK({
         message: 'Get login logs success',
@@ -196,7 +195,6 @@ export class ManagemnentController {
   public searchSystemStatistics = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const search = req.query.search;
-      console.log(search);
       // Check if query is provided
       if (!search || typeof search !== 'string') {
         return res.status(400).json({
@@ -206,7 +204,6 @@ export class ManagemnentController {
 
       // Search behavior histories
       const result = await this.management.searchSystemStatistics(search);
-      console.log(result);
       // Respond with the search results
       new OK({
         message: 'Search system statistics success',
