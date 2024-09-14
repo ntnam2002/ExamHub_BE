@@ -56,7 +56,9 @@ export class ExamController {
     try {
       const page = parseInt(String(req.query.limit)) || 1;
       const limit = parseInt(String(req.query.limit)) || 10;
-      const question = await this.examService.updateQuestion(req.params.id, req.body);
+      const id = req.params.id;
+      console.log(id);
+      const question = await this.examService.updateQuestion(id, req.body);
       new OK({
         message: 'Question updated successfully',
         data: question,

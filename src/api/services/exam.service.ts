@@ -70,6 +70,8 @@ export class ExamService {
 
   public async updateQuestion(_id: string, data: IQuestion) {
     try {
+      console.log(data);
+      console.log(_id);
       const updateQuestion = await QuestionModel.findByIdAndUpdate(
         _id,
         { $set: data },
@@ -84,7 +86,8 @@ export class ExamService {
 
   public async deleteQuestion(_id: string) {
     try {
-      const deleteQuestion = await QuestionModel.findByIdAndDelete(_id);
+      console.log(_id);
+      const deleteQuestion = await QuestionModel.findOneAndDelete({ _id });
       if (!deleteQuestion) throw new HttpException(404, 'Question not found');
       return deleteQuestion;
     } catch (error) {

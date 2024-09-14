@@ -74,6 +74,7 @@ export class ManagementService {
   }
   public async manageStudentBehavior(examinationId: string, studentId: string, behavior: string) {
     try {
+      console.log('manageStudentBehavior', examinationId);
       const examination = await ExaminationModel.findById(examinationId);
       if (!examination) {
         throw new HttpException(404, 'Examination not found');

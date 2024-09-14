@@ -224,7 +224,7 @@ export class AdminService {
 
   public async deleteDepartment(departmentId: string) {
     try {
-      const findDepartment = await DepartmentModel.findOneAndDelete({ departmentId });
+      const findDepartment = await DepartmentModel.findOneAndDelete({ _id: departmentId });
       if (!findDepartment) throw new Error('Department not found');
       return findDepartment;
     } catch (error) {
